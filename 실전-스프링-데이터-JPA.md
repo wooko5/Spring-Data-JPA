@@ -56,7 +56,7 @@
          - 작은 코드 베이스
          - 풍부한 옵션 구성
          - 쓰레드 안정성
-         - ![image-20231121105133218](C:\Users\USER\AppData\Roaming\Typora\typora-user-images\image-20231121105133218.png)
+         - ![image](https://github.com/wooko5/Spring-Data-JPA/assets/58154633/71bc39eb-1054-448b-8558-d85964ee7f1a)
 
    - H2 DB 생성
 
