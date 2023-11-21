@@ -32,7 +32,31 @@
      - TIP
        - 스프링부트 2.0부터는 디폴트 Connection Pool(CP)가 Hikari CP임
        - 이전에는 Tomcat-JDBC를 사용, Hikari CP의 성능이 더 좋기 떄문에 바뀜
-       - 빠른 이유: 
+     - TODO: DB Connection Pool 개념과 Hikari CP의 성능이 더 좋은 이유?
+       - DB Connection의 순서
+         - 어플리케이션이 DB 드라이버를 통해 Connection을 맺음
+         - 어플리케이션과 DB를 연결하기 위해 소켓이 열림(TCP, 3-way handshake)
+         - 사용자 인증
+         - DB 작업이 끝나면 Connection을 끊음
+         - 소켓이 닫힘
+       - DB Connection Pool?
+         - DB 연결을 위해 미리 일정한 수의 Connection 객체를 미리 만들어서 Pool에 보관하고 매 요청마다 이미 생성된 Connection 객체를 넘겨주고, 작업이 끝나면 다시 Pool에 보관하는 방식을 DB Connection Pool 이라함
+         - 이유
+           - 클라이언트 요청시, DB와 어플리케이션을 연결/해제한다면 대규모 시스템에서는 비용이 굉장히 비싸고, 이는 성능(응답시간/처리량)에 영향을 끼칠 수 있음
+           - 해결책: '미리 DB Connection을 많이 만들어놓고 쓰자' ==> DB 포화를 방지하고 일관된 성능을 기대할 수 있음
+       - [가장 이상적인 Connection Pool 크기?](https://github.com/brettwooldridge/HikariCP/wiki/About-Pool-Sizing#the-formula)
+         - `Connection size = (CPU 코어 개수*2 + DB 동시I/O처리개수) by Hikari 공식문서`
+         - 600명의 사용자가 있다면, 15~20개 크기가 적당(좀더 조사해보자)
+         - Connection Pool 크기를 무한정 늘린다고 해결되는 것이 아님
+           - Connection 자체가 객체이기 때문에 생성을 많이 해두면 메모리를 추가로 사용하게 됨
+           - Connection을 적게 생성하면 사용자가 요청을 기다리는 시간이 증가(Connection이 반납될 때까지 대기)
+       - [Hikari CP](https://github.com/brettwooldridge/HikariCP#checkered_flag-jmh-benchmarks)의 성능이 더 좋은 이유
+         - 적은 메모리 사용량
+         - 높은 처리량
+         - 작은 코드 베이스
+         - 풍부한 옵션 구성
+         - 쓰레드 안정성
+         - ![image-20231121105133218](C:\Users\USER\AppData\Roaming\Typora\typora-user-images\image-20231121105133218.png)
 
    - H2 DB 생성
 
