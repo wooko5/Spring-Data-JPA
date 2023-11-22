@@ -73,7 +73,78 @@
 
    - 스프링 데이터 JPA와 DB 설정, 동작 확인
 
+     - application.yml 추가
+
+       - ```yaml
+         spring:
+         	datasource:
+          url: jdbc:h2:tcp://localhost/~/datajpa
+          username: sa
+          password:
+          driver-class-name: org.h2.Driver
+          jpa:
+          hibernate:
+          ddl-auto: create
+          properties:
+          hibernate:
+         # show_sql: true
+          format_sql: true
+         logging.level:
+          org.hibernate.SQL: debug
+         # org.hibernate.type: trace
+         ```
+
+     - test class 만들기 (`Ctrl + Shift + T`)
+
+       - ```java
+         /**
+          * JUnit5 테스트 시, `@SpringBootTest`만 써줘도 기존의 `@RunWith(SpringRunner.class)`를 대체함
+          */
+         @SpringBootTest
+         class MemberJpaRepositoryTest {
+         
+             @Test
+             void save() {
+             }
+         
+             @Test
+             void find() {
+             }
+         }
+         ```
+
+     - 엔티티의 기본 생성자를 protected로 놓는 이유
+
+       - JPA 구현체인 hibernate에서 엔티티를 proxy 객체로 강제로 생성할 때, 접근제어자가 private으로 되어있으면 막혀서 생성 못 함. 그러므로 protected로 놓으라고 JPA 명세에 나옴
+
+       - ```java
+         @Entity
+         @Getter
+         @NoArgsConstructor(access = AccessLevel.PROTECTED)
+         public class Member {
+         
+             @Id
+             @GeneratedValue
+             private Long id;
+             private String username;
+         
+             public Member(String username) {
+                 this.username = username;
+             }
+         }
+         ```
+
+     - 콘솔창에 파라미터 출력 - 해당 라이브러리 작성
+
+       - ```groovy
+         implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.5.7'
+         ```
+
+       - 개발 서버에서는 몰라도, 운영 서버에서는 많은 로그를 남기는 것이 성능에 영향을 끼칠 수 있기 때문에 신중하게 선택해야함
+
 2. 예제 도메인 모델
+
+   - 예제 도메인 모델과 동작확인
 
 3. 공통 인터페이스 기능
 
