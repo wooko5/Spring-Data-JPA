@@ -77,25 +77,27 @@
 
        - ```yaml
          spring:
-         	datasource:
-          url: jdbc:h2:tcp://localhost/~/datajpa
-          username: sa
-          password:
-          driver-class-name: org.h2.Driver
-          jpa:
-          hibernate:
-          ddl-auto: create
-          properties:
-          hibernate:
-         # show_sql: true
-          format_sql: true
+           datasource:
+             url: jdbc:h2:tcp://localhost/~/datajpa
+             username: sa
+             password:
+             driver-class-name: org.h2.Driver
+         
+           jpa:
+             hibernate:
+               ddl-auto: create
+             properties:
+               hibernate:
+         #        show_sql: true # 콘솔창에 하이버네이트 실행 SQL을 남김
+                 format_sql: true
+         
          logging.level:
-          org.hibernate.SQL: debug
-         # org.hibernate.type: trace
+           org.hibernate.SQL: debug # logger를 통해 하이버네이트 실행 SQL을 남김
+         #  org.hibernate.type: trace # SQL에 던지는 파라미터를 출력해주는 옵션
          ```
 
      - test class 만들기 (`Ctrl + Shift + T`)
-
+     
        - ```java
          /**
           * JUnit5 테스트 시, `@SpringBootTest`만 써줘도 기존의 `@RunWith(SpringRunner.class)`를 대체함
@@ -116,7 +118,7 @@
      - 엔티티의 기본 생성자를 protected로 놓는 이유
 
        - JPA 구현체인 hibernate에서 엔티티를 proxy 객체로 강제로 생성할 때, 접근제어자가 private으로 되어있으면 막혀서 생성 못 함. 그러므로 protected로 놓으라고 JPA 명세에 나옴
-
+     
        - ```java
          @Entity
          @Getter
@@ -135,11 +137,11 @@
          ```
 
      - 콘솔창에 파라미터 출력 - 해당 라이브러리 작성
-
+     
        - ```groovy
          implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.5.7'
          ```
-
+     
        - 개발 서버에서는 몰라도, 운영 서버에서는 많은 로그를 남기는 것이 성능에 영향을 끼칠 수 있기 때문에 신중하게 선택해야함
 
 2. 예제 도메인 모델
