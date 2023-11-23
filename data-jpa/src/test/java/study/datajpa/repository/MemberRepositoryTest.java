@@ -25,7 +25,8 @@ class MemberRepositoryTest {
         Member member = new Member("Jaeuk");
         Member savedMember = memberRepository.save(member);
         Optional<Member> optionalMember = memberRepository.findById(savedMember.getId());
-        Member foundMember = optionalMember.isPresent() ? optionalMember.get() : optionalMember.orElseThrow();
+        //TODO: 다른 방식으로 고칠 수는 없을까?, orElse/orElseGet/orElseThrow 중 선택, 단순하게 값을 넘기는건 지양해야하나
+        Member foundMember = optionalMember.orElse(new Member("emptyMember"));
         assertThat(foundMember.getId()).isEqualTo(member.getId());
         assertThat(foundMember.getUsername()).isEqualTo(member.getUsername());
         assertThat(foundMember).isEqualTo(member);

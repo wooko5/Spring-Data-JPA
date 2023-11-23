@@ -33,6 +33,8 @@
        - 스프링부트 2.0부터는 디폴트 Connection Pool(CP)가 Hikari CP임
        - 이전에는 Tomcat-JDBC를 사용, Hikari CP의 성능이 더 좋기 떄문에 바뀜
      - TODO: DB Connection Pool 개념과 Hikari CP의 성능이 더 좋은 이유?
+       - 호기심 동기
+         - 스프링부트 2.0부터는 디폴트 Connection Pool(CP)가 Hikari CP로 바뀌었는데 어떤 점 때문에 바뀌었을지 궁금해짐
        - DB Connection의 순서
          - 어플리케이션이 DB 드라이버를 통해 Connection을 맺음
          - 어플리케이션과 DB를 연결하기 위해 소켓이 열림(TCP, 3-way handshake)
@@ -143,6 +145,25 @@
          ```
      
        - 개발 서버에서는 몰라도, 운영 서버에서는 많은 로그를 남기는 것이 성능에 영향을 끼칠 수 있기 때문에 신중하게 선택해야함
+       
+     - TODO: Optional을 언제 사용하는게 적절할까?
+     
+       - 호기심 동기
+     
+         - `JpaRepository<T, id>`를 구현한 인터페이스로 대부분의 쿼리를 JPA가 대신 생성하는데 `findById`의 경우, Optional 체크를 강요함. Optional의 올바른 사용법이 궁금해짐
+     
+       -  올바른 경우, [출처](https://mangkyu.tistory.com/203)
+     
+         - ```
+           1) Optional 변수에 null을 할당하지 않기
+           2) 값일 없을 때, Optional.orElseXxx()로 기본값을 반환하자
+           3) 단순히 값을 얻을려고 하면 Optional을 사용하지 말자
+           4) 생성자, 수정자, 메소드의 파라미터로 사용하지 말자
+           5) Collection의 경우 Optional이 아닌 비어있는 Collection을 사용하라
+           6) return 타입으로만 사용하라
+           ```
+     
+         - 정리중
 
 2. 예제 도메인 모델
 
