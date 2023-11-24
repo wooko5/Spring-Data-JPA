@@ -166,7 +166,7 @@
        - Optional 변수에 null을 할당하지 않기
        
          - ```java
-           Optional<Member> optionalMember = repository.findById(memberId); // prefer
+           Optional<Member> optionalMember = Optional.empty(); // prefer
            Optional<Member> optionalMember = null; // avoid
            ```
        
@@ -211,38 +211,40 @@
        - Collection의 경우 Optional이 아닌 비어있는 Collection을 사용하라
        
          - ```java
-           // avoid
-           public Optional<List<Member>> getMemberList() {
-               List<Member> memberList = ...; // null이 올 수 있음
+           private List<Member> memberList = ...; // null이 올 수 있음
            
-               return Optional.ofNullable(items);
+           // avoid
+           public Optional<List<Member>> getMemberList() {    
+               return Optional.ofNullable(memberList);
            }
            
            // prefer
            public List<Member> getMemberList() {
-               List<Member> memberList = ...; // null이 올 수 있음
-           
-               return items == null ? Collections.emptyList() : memberList;
+               return memberList == null ? Collections.emptyList() : memberList;
            }
            ```
        
-       - return 타입으로만 사용하라
+       - return 타입으로만 사용하라(수정중)
        
          - ```java
+           private Member member = new Member("Jaeuk");
+           private Member savedMember = memberRepository.save(member);
+           
            // avoid
-           public Optional<Member> getUsername(){
-               Member member = new Member("Jaeuk");
-               Member savedMember = memberRepository.save(member);
-               return memberRepository.findById(savedMember.getId());
+           public Boolean getUsername(){
+               Optional<Member> optionalMember = memberRepository.findById(savedMember.getId());
+               return optionalMember.isPresent() ? true : false;
            }
            
            // prefer
-           public Member getUsername(){
-               Member member = new Member("Jaeuk");
-               Member savedMember = memberRepository.save(member);
-               return memberRepository.findById(savedMember.getId()).orElseThrow();
+           public Optional<Member> getUsername(){
+               return memberRepository.findById(savedMember.getId());
            }
            ```
+       
+       - 결론
+       
+         - Optional을 잘못 사용하는 것은 차라리 쓰지 않는 것만 못 하므로 써야할 때와 쓰지 말아야할 때를 구분하자
 
 2. 예제 도메인 모델
 
