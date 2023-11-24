@@ -21,7 +21,7 @@ class MemberRepositoryTest {
     MemberRepository memberRepository;
 
     @Test
-    public void testMember(){
+    public void testMember() {
         Member member = new Member("Jaeuk");
         Member savedMember = memberRepository.save(member);
         Optional<Member> optionalMember = memberRepository.findById(savedMember.getId());
@@ -31,11 +31,4 @@ class MemberRepositoryTest {
         assertThat(foundMember.getUsername()).isEqualTo(member.getUsername());
         assertThat(foundMember).isEqualTo(member);
     }
-
-    public Member getUsername(){
-        Member member = new Member("Jaeuk");
-        Member savedMember = memberRepository.save(member);
-        return memberRepository.findById(savedMember.getId()).orElseThrow();
-    }
-
 }
