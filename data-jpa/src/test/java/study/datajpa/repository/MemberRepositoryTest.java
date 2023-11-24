@@ -32,4 +32,10 @@ class MemberRepositoryTest {
         assertThat(foundMember).isEqualTo(member);
     }
 
+    public Member getUsername(){
+        Member member = new Member("Jaeuk");
+        Member savedMember = memberRepository.save(member);
+        return memberRepository.findById(savedMember.getId()).orElseThrow();
+    }
+
 }

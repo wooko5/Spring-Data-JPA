@@ -156,14 +156,93 @@
      
          - ```
            1) Optional 변수에 null을 할당하지 않기
-           2) 값일 없을 때, Optional.orElseXxx()로 기본값을 반환하자
+           2) 값이 없을 때, Optional.orElseXxx()로 기본값을 반환하자
            3) 단순히 값을 얻을려고 하면 Optional을 사용하지 말자
            4) 생성자, 수정자, 메소드의 파라미터로 사용하지 말자
            5) Collection의 경우 Optional이 아닌 비어있는 Collection을 사용하라
            6) return 타입으로만 사용하라
            ```
      
-         - 정리중
+       - Optional 변수에 null을 할당하지 않기
+       
+         - ```java
+           Optional<Member> optionalMember = repository.findById(memberId); // prefer
+           Optional<Member> optionalMember = null; // avoid
+           ```
+       
+       - 값이 없을 때, Optional.orElseXxx()로 기본값을 반환하자
+       
+         - ```java
+           Member foundMember = optionalMember.orElse(new Member("emptyMember")); // prefer
+           Member foundMember = optionalMember.isPresent() ? optionalMember.get() : null; // avoid
+           ```
+       
+       - 단순히 값을 얻을려고 하면 Optional을 사용하지 말자
+       
+         - ```java
+           Member foundMember = optionalMember == null ? new Member("emptyMember") : optionalMember; // prefer
+           Member foundMember = Optional.ofNullable(optionalMember).orElse(new Member("emptyMember")); // avoid
+           ```
+       
+       - 생성자, 수정자, 메소드의 파라미터로 사용하지 말자
+       
+         - ```java
+           // avoid
+           public class Member {
+               
+               private final Optional<Long> id;
+               private final String username;
+           
+               public Customer(String username, Optional<Long> id) {
+                   this.username = Objects.requireNonNull(username, () -> "Cannot be null");
+                   this.id = id;
+               }
+           
+               public Optional<String> getUsername() {
+                   return Optional.ofNullable(username);
+               }
+               
+               public Optional<String> getId() {
+                   return id;
+               }
+           }
+           ```
+       
+       - Collection의 경우 Optional이 아닌 비어있는 Collection을 사용하라
+       
+         - ```java
+           // avoid
+           public Optional<List<Member>> getMemberList() {
+               List<Member> memberList = ...; // null이 올 수 있음
+           
+               return Optional.ofNullable(items);
+           }
+           
+           // prefer
+           public List<Member> getMemberList() {
+               List<Member> memberList = ...; // null이 올 수 있음
+           
+               return items == null ? Collections.emptyList() : memberList;
+           }
+           ```
+       
+       - return 타입으로만 사용하라
+       
+         - ```java
+           // avoid
+           public Optional<Member> getUsername(){
+               Member member = new Member("Jaeuk");
+               Member savedMember = memberRepository.save(member);
+               return memberRepository.findById(savedMember.getId());
+           }
+           
+           // prefer
+           public Member getUsername(){
+               Member member = new Member("Jaeuk");
+               Member savedMember = memberRepository.save(member);
+               return memberRepository.findById(savedMember.getId()).orElseThrow();
+           }
+           ```
 
 2. 예제 도메인 모델
 
