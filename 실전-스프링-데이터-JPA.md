@@ -249,6 +249,9 @@
 2. 예제 도메인 모델
 
    - 예제 도메인 모델과 동작확인
+     - Entity class
+     - ERD
+     - MappedBy는 FK를 가지고있지 않은 Entity에 선언함
 
 3. 공통 인터페이스 기능
 
