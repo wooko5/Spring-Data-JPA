@@ -250,10 +250,130 @@
 
    - 예제 도메인 모델과 동작확인
      - Entity class
+     
+       - ![image-20231128235937619](C:\Users\wooko\AppData\Roaming\Typora\typora-user-images\image-20231128235937619.png)
+     
      - ERD
+     
+       - ![image-20231128235949051](C:\Users\wooko\AppData\Roaming\Typora\typora-user-images\image-20231128235949051.png)
+     
      - MappedBy는 FK를 가지고있지 않은 Entity에 선언함
+     
+       - ```java
+         @Entity
+         @Getter
+         @NoArgsConstructor(access = AccessLevel.PROTECTED)
+         @ToString(of = {"id", "name"})
+         public class Team {
+         
+             @Id @GeneratedValue
+             @Column(name = "team_id")
+             private Long id;
+             private String name;
+             @OneToMany(mappedBy = "team")
+             private List<Member> members = new ArrayList<>();
+         
+             public Team(String name) {
+                 this.name = name;
+             }
+         }
+         
+         @Entity
+         @Getter
+         @NoArgsConstructor(access = AccessLevel.PROTECTED)
+         @ToString(of = {"id", "username", "age"})
+         // team을 해당 어노테이션에 넣으면 양방향 관계이기 때문에 무한참조가 발생할 수 있음, 가급적이면 연관관계는 @ToString에 넣지말자
+         public class Member {
+         
+             @Id
+             @GeneratedValue
+             @Column(name = "member_id")
+             private Long id;
+             private String username;
+             private int age;
+         
+             @ManyToOne(fetch = FetchType.LAZY) //XxxToOne은 지연로딩으로 만들자
+             @JoinColumn(name = "team_id")
+             private Team team;
+         
+             public Member(String username) {
+                 this.username = username;
+             }
+         
+             public Member(String username, int age, Team team) {
+                 this.username = username;
+                 this.age = age;
+                 if (team != null) {
+                     changeTeam(team);
+                 }
+             }
+         
+             public void changeTeam(Team team) {
+                 this.team = team;
+                 team.getMembers().add(this); //team과 member는 양방향 연관관계이기 때문에 team을 바꾸면 team의 member 변수에도 수정해야함
+             }
+         }
+         ```
+     
+         
 
 3. 공통 인터페이스 기능
+
+   - 순수 JPA 기반 리포지토리(Repository) 만들기
+
+     - CRUD로 기본적인 로직 생성
+
+       - MemberJpaRepository
+
+         - ```java
+           @Repository
+           public class MemberJpaRepository {
+           
+               @PersistenceContext
+               private EntityManager entityManager;
+           
+               public Member save(Member member) {
+                   entityManager.persist(member);
+                   return member;
+               }
+           
+               //CRUD중 U(수정)가 없는 이유는 JPA는 변경감지를 통해 영속성 컨텍스트가 관리하는 영속 상태의 엔티티를 수정함
+           
+               public void delete(Member member) {
+                   entityManager.remove(member);
+               }
+           
+               public List<Member> findAll() {
+                   return entityManager.createQuery("select m from Member m", Member.class).getResultList();
+               }
+           
+               public Optional<Member> findById(Long memberId){
+                   return Optional.ofNullable(entityManager.find(Member.class, memberId));
+               }
+           
+               public long count(){
+                   return entityManager.createQuery("select count(m) from Member m", Long.class).getSingleResult();
+               }
+           }
+           ```
+
+     - TODO: Dirty Checking의 순서
+
+       - ```
+         1) @Transactional처럼 트랜잭션을 커밋하겠다고 비즈니스 로직에서 JPA에게 요청을 보내면 flush()가 호출
+         
+         2) 해당 시점에 영속성 컨텍스트가 엔티티와 스냅샷을 비교해서 차이가 존재한다면 UPDATE문을 생성해서 '쓰기 지연' SQL 저장소에 저장
+         
+         3) 쓰기 지연 SQL 저장소에 있는 쿼리문을 DB에 전송
+         
+         4) DB에서 트랜잭션을 커밋 
+         ```
+
+   - 공통 인터페이스 설정
+
+   - 공통 인터페이스 적용
+
+   - 공통 인터페이스 분석
 
 4. 쿼리 메소드 기능
 
