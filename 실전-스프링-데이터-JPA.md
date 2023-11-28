@@ -251,11 +251,11 @@
    - 예제 도메인 모델과 동작확인
      - Entity class
      
-       - ![image-20231128235937619](C:\Users\wooko\AppData\Roaming\Typora\typora-user-images\image-20231128235937619.png)
+       - ![image](https://github.com/wooko5/Spring-Data-JPA/assets/58154633/d232c65d-9b24-4702-a5d2-f5b238a68dbd)
      
      - ERD
      
-       - ![image-20231128235949051](C:\Users\wooko\AppData\Roaming\Typora\typora-user-images\image-20231128235949051.png)
+       - ![image](https://github.com/wooko5/Spring-Data-JPA/assets/58154633/2f3843da-e895-4a4f-9898-a267ba47d40a)
      
      - MappedBy는 FK를 가지고있지 않은 Entity에 선언함
      
