@@ -393,7 +393,7 @@
 
      - 스프링 데이터 JPA가 JpaRepository를 상속한 인터페이스의 구현체를 생성
 
-       - ![image-20231201010112662](C:\Users\wooko\AppData\Roaming\Typora\typora-user-images\image-20231201010112662.png)
+       - ![image](https://github.com/wooko5/Spring-Data-JPA/assets/58154633/4b97dda4-c9c9-4764-bf7e-66034a98e6e7)
 
        - ```java
          public interface MemberRepository extends JpaRepository<Member, Long> {
