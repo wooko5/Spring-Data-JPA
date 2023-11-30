@@ -371,6 +371,38 @@
 
    - 공통 인터페이스 설정
 
+     - javaConfig 설정
+
+       - ```java
+         package study.datajpa;
+         
+         import org.springframework.boot.SpringApplication;
+         import org.springframework.boot.autoconfigure.SpringBootApplication;
+         
+         @SpringBootApplication
+         //@EnableJpaRepositories(basePackages = "study.datajpa.repository") // 스프링부트를 쓰면 굳이 쓸 필요가 없음
+         public class DataJpaApplication {
+         
+             public static void main(String[] args) {
+                 SpringApplication.run(DataJpaApplication.class, args);
+             }
+         
+         }
+         
+         ```
+
+     - 스프링 데이터 JPA가 JpaRepository를 상속한 인터페이스의 구현체를 생성
+
+       - ![image-20231201010112662](C:\Users\wooko\AppData\Roaming\Typora\typora-user-images\image-20231201010112662.png)
+
+       - ```java
+         public interface MemberRepository extends JpaRepository<Member, Long> {
+             // 구현체가 없는 interface인데 JPA가 알아서 구현 클래스를 생성함
+         }
+         ```
+
+         
+
    - 공통 인터페이스 적용
 
    - 공통 인터페이스 분석

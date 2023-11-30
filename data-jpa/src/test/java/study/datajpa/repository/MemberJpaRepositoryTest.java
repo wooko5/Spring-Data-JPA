@@ -33,7 +33,7 @@ class MemberJpaRepositoryTest {
     }
 
     @Test
-    public void basicCRUD(){
+    public void basicCRUD() {
         Member memberA = new Member("Apple");
         Member memberB = new Member("Microsoft");
         memberJpaRepository.save(memberA);
@@ -52,9 +52,6 @@ class MemberJpaRepositoryTest {
         //카운트 검증
         long count = memberJpaRepository.count();
         assertThat(count).isEqualTo(2);
-
-        //수정 검증
-
 
         //삭제 검증
         memberJpaRepository.delete(memberA);
