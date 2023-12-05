@@ -401,11 +401,22 @@
          }
          ```
 
-         
-
    - 공통 인터페이스 적용
 
    - 공통 인터페이스 분석
+
+     - 주의
+
+       - ```
+         변경사항
+         - T findOne(ID) ==> Optional<T> findById(ID)로 변경
+         - boolean exists(ID) ==> boolean existsById(ID)로 변경
+         
+         제네릭 타입
+         - T  : 엔티티
+         - ID : 엔티티의 식별자 타입
+         - S  : 엔티티와 그 자식 타입
+         ```
 
 4. 쿼리 메소드 기능
 
