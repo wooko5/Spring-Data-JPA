@@ -6,5 +6,7 @@ import study.datajpa.entity.Member;
 import java.util.List;
 
 public interface MemberRepository extends JpaRepository<Member, Long> {
-    List<Member> findByUsername(String username);
+    List<Member> findByUsernameAndAgeGreaterThan(String username, int age);
+
+    List<Member> findTop3HelloBy(); // HelloBy만 쓰면 오류지만 findTop3 때문에 유효한 리미트 Query가 출력
 }

@@ -60,4 +60,23 @@ class MemberRepositoryTest {
         memberRepository.delete(memberB);
         assertThat(memberRepository.findAll().size()).isEqualTo(0);
     }
+
+    @Test
+    void findByUsernameAndGreaterThenAge() {
+        Member a = new Member("AAA", 10);
+        Member b = new Member("AAA", 20);
+        memberRepository.save(a);
+        memberRepository.save(b);
+
+        List<Member> result = memberRepository.findByUsernameAndAgeGreaterThan("AAA", 15);
+        assertThat(result.get(0).getUsername()).isEqualTo("AAA");
+        assertThat(result.get(0).getAge()).isEqualTo(20);
+        assertThat(result.size()).isEqualTo(1);
+    }
+
+
+    @Test
+    void findTop3HelloBy() {
+        List<Member> result = memberRepository.findTop3HelloBy();
+    }
 }
