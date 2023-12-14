@@ -453,13 +453,58 @@
    - JPA NamedQuery
 
      - 실무에서 잘 안 쓰는 이유
+
        - 다음 수업 시간에 배울 `@Query 어노테이션을 통해 레포지토리에 직접 쿼리를 입력하는 방법`이 있어서 실무에서 사용할 가능성이 낮음
+
      - 우선순위
+
        - NamedQuery를 찾고, 해당 메소드가 없다면 메소드이름으로 쿼리를 생성하는 걸 찾음
+
+     - 코드
+
+       - ```java
+         public interface MemberRepository extends JpaRepository<Member, Long> {
+             @Query(name = "Member.findByUsername") // Member 엔티티에서 해당 쿼리를 찾음
+             List<Member> findByUsername(@Param("username") String username); // 실무에서는 거의 쓸 일이 없음
+         }
+         ```
+
      - 장점
+
        - 애플리케이션 로딩 시, 정적 쿼리이기 때문에 컴파일 시에 문법 오류가 있는지 확인할 수 있음 
 
    - `@Query` 어노테이션을 사용해서 리파지토리 인터페이스에 쿼리 직접 정의
+
+     - 코드
+
+       - ```java
+         public interface MemberRepository extends JpaRepository<Member, Long> {
+             @Query("select m from Member m where m.username = :username and m.age = :age")
+             List<Member> findUser(@Param("username") String username, @Param("age") int age);
+         }
+         ```
+
+     - 장점
+
+       - 애플리케이션 로딩 시, @Query 어노테이션에 입력된 정적 쿼리문을 파싱해서 문법 오류가 있는지 검사함
+       - 정적 쿼리인 경우에 실무에서 가장 많이 쓰는 방법
+       - 동적 쿼리는 QueryDsl을 가장 많이 사용함
+
+   - @Query, 값, DTO 조회하기
+
+   - 파라미터 바인딩
+
+   - 반환 타입
+
+   - 순수 JPA 페이징과 정렬
+
+   - 스프링 데이터 JPA 페이징과 정렬
+
+   - 벌크성 수정 쿼리
+
+   - @EntityGraph
+
+   - JPA Hint & Lock
 
 5. 확장 기능
 
