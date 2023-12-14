@@ -423,11 +423,35 @@
    - 메소드이름으로 쿼리생성
      - JPA에서 제공하는 기능으로 쿼리 생성하기
        - https://docs.spring.io/spring-data/jpa/reference/jpa/query-methods.html
+     
+     - 비교
+     
+       - 순수 JPA repository
+     
+         - ```java
+           public List<Member> findByUsernameAndAgeGreaterThan(String username, int age) {
+               return em.createQuery("select m from Member m where m.username = :username and m.age > :age")
+                   .setParameter("username", username)
+                   .setParameter("age", age)
+                   .getResultList();
+           }
+           ```
+     
+       - 스프링 DATA JPA
+     
+         - ```java
+           public interface MemberRepository extends JpaRepository<Member, Long> { 
+               List<Member> findByUsernameAndAgeGreaterThan(String username, int age);
+           }
+           ```
+     
      - 참고
-       - 엔티티의 필드명이 변경되면 인터페이스에 정의한 메서드 이름도 꼭 함께 변경해야 한다. 그렇지
-         않으면 애플리케이션을 시작하는 시점에 오류가 발생
+     
+       - 엔티티의 필드명이 변경되면 인터페이스에 정의한 메서드 이름도 꼭 함께 변경해야 한다. 그렇지 않으면 애플리케이션을 시작하는 시점에 오류가 발생
        - 이렇게 애플리케이션 로딩 시점에 오류를 인지할 수 있는 것이 스프링 데이터 JPA의 매우 큰 장점임
+     
    - JPA NamedQuery
+
    - `@Query` 어노테이션을 사용해서 리파지토리 인터페이스에 쿼리 직접 정의
 
 5. 확장 기능
