@@ -5,7 +5,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
+import study.datajpa.dto.MemberDto;
 import study.datajpa.entity.Member;
+import study.datajpa.entity.Team;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,6 +21,9 @@ class MemberRepositoryTest {
 
     @Autowired
     MemberRepository memberRepository;
+
+    @Autowired
+    TeamRepository teamRepository;
 
     @Test
     public void testMember() {
@@ -81,7 +86,7 @@ class MemberRepositoryTest {
     }
 
     @Test
-    public void testNameQuery(){
+    public void testNameQuery() {
         Member a = new Member("AAA", 10);
         Member b = new Member("BBB", 20);
         memberRepository.save(a);
@@ -93,14 +98,42 @@ class MemberRepositoryTest {
     }
 
     @Test
-    public void testQuery(){
+    public void testQuery() {
         Member a = new Member("AAA", 10);
         Member b = new Member("BBB", 20);
         memberRepository.save(a);
         memberRepository.save(b);
 
         List<Member> result = memberRepository.findUser("AAA", 10);
-        Member findMember = result.get(0);
-        assertThat(findMember).isEqualTo(a);
+        assertThat(result.get(0)).isEqualTo(a);
+    }
+
+    @Test
+    public void findUsernameList() {
+        Member a = new Member("AAA", 10);
+        Member b = new Member("BBB", 20);
+        memberRepository.save(a);
+        memberRepository.save(b);
+
+        List<String> result = memberRepository.findUsernameList();
+        for (String username : result) {
+            System.out.println("username == " + username);
+        }
+    }
+
+    @Test
+    public void findMemberDto() {
+        Team team = new Team("Arsenal");
+        teamRepository.save(team);
+
+        Member a = new Member("AAA", 10);
+        a.setTeam(team);
+        memberRepository.save(a);
+
+
+        List<MemberDto> result = memberRepository.findMemberDto();
+        for (MemberDto dto : result) {
+            System.out.println("dto == " + dto);
+        }
     }
 }

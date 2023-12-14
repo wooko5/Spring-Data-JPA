@@ -492,6 +492,22 @@
 
    - @Query, 값, DTO 조회하기
 
+     - 코드
+
+       - ```java
+         public interface MemberRepository extends JpaRepository<Member, Long> {
+             @Query("select m.username from Member m")
+             List<String> findUsernameList();
+         
+             @Query("select new study.datajpa.dto.MemberDto(m.id, m.username, t.name) from Member m join m.team t")
+             List<MemberDto> findMemberDto();
+         }
+         ```
+
+     - TIP
+
+       - `QueryDsl을 쓰면 이 방법은 쓰지않음`
+
    - 파라미터 바인딩
 
    - 반환 타입
