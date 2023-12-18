@@ -1,5 +1,6 @@
 package study.datajpa.repository;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -9,6 +10,7 @@ import study.datajpa.dto.MemberDto;
 import study.datajpa.entity.Member;
 import study.datajpa.entity.Team;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -67,6 +69,7 @@ class MemberRepositoryTest {
     }
 
     @Test
+    @DisplayName("메소드 이름 쿼리 조회 테스트1")
     void findByUsernameAndGreaterThenAge() {
         Member a = new Member("AAA", 10);
         Member b = new Member("AAA", 20);
@@ -81,11 +84,13 @@ class MemberRepositoryTest {
 
 
     @Test
+    @DisplayName("메소드 이름 쿼리 조회 테스트2")
     void findTop3HelloBy() {
         List<Member> result = memberRepository.findTop3HelloBy();
     }
 
     @Test
+    @DisplayName("NamedQuery 테스트")
     public void testNameQuery() {
         Member a = new Member("AAA", 10);
         Member b = new Member("BBB", 20);
@@ -98,6 +103,7 @@ class MemberRepositoryTest {
     }
 
     @Test
+    @DisplayName("쿼리로 직접 조회 테스트")
     public void testQuery() {
         Member a = new Member("AAA", 10);
         Member b = new Member("BBB", 20);
@@ -122,6 +128,7 @@ class MemberRepositoryTest {
     }
 
     @Test
+    @DisplayName("DTO 조회 테스트")
     public void findMemberDto() {
         Team team = new Team("Arsenal");
         teamRepository.save(team);
@@ -134,6 +141,21 @@ class MemberRepositoryTest {
         List<MemberDto> result = memberRepository.findMemberDto();
         for (MemberDto dto : result) {
             System.out.println("dto == " + dto);
+        }
+    }
+
+    @Test
+    @DisplayName("파라미터 바인딩 테스트 - 위치기반, 컬렉션 파라미터")
+    public void findByNames() {
+        Member a = new Member("AAA", 10);
+        Member b = new Member("BBB", 20);
+        memberRepository.save(a);
+        memberRepository.save(b);
+
+
+        List<Member> result = memberRepository.findByNames(Arrays.asList("AAA", "BBB"));
+        for (Member member : result) {
+            System.out.println("member == " + member);
         }
     }
 }

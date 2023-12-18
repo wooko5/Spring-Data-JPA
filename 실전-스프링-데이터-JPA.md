@@ -510,6 +510,27 @@
 
    - 파라미터 바인딩
 
+     - 코드
+
+       - ```java
+         select m from Member m where m.username = ?0 //위치 기반
+         select m from Member m where m.username = :name //이름 기반
+         ```
+
+       - `현재는 실무에서 '위치' 기반은 거의 쓰지 않음`
+
+       - 코드  가독성이나 유지보수 측면에서 '이름' 기반이 더 뛰어남. 왜냐하면 '위기 기반'은 위치가 바뀌면 오류가 날 확률이 매우 큼. 
+
+     - 컬렉션 파라미터 바인딩
+
+       - ```java
+         @Query("select m from Member m where m.username in :names")
+             List<Member> findByNames(@Param("names") List<String> names); // (4)파라미터 바인딩(컬렉션 파라미터 바인딩, 이름기반)
+         
+         @Query("select m from Member m where m.username in :names")
+             List<Member> findByNames(@Param("names") Collection<String> names); // 다양한 input을 위해 List에서 Collection으로 바꿈
+         ```
+
    - 반환 타입
 
    - 순수 JPA 페이징과 정렬
