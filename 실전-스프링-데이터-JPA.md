@@ -533,6 +533,21 @@
 
    - 반환 타입
 
+     - 컬렉션
+       - 컬렉션 조회 시, 해당 컬렉션이 empty 일 때 스프링 데이터 JPA가 알아서 `빈 컬렉션을 생성해서 반환`
+       - NPE가 발생하지 않음
+       - 순수한 JPA가 아니라 스프링 데이터 JPA이기 떄문
+     - 단건
+       - 단건 조회 시, 해당 단건이 없을 때 그냥 `null을 반환`
+       - 단건 조회 시, 결과가 2건 이상이면 `NonUniqueResultException ` 발생
+       - NoResultException이 발생하지 않음
+       - 순수한 JPA가 아니라 스프링 데이터 JPA이기 떄문
+     - Optional
+       - DB에 해당 데이터가 있을지 없을지 모른다면 꼭 Optional을 쓰는 것을 추천
+     - 테스트 사진
+       - ![image-20231220022036745](C:\Users\wooko\AppData\Roaming\Typora\typora-user-images\image-20231220022036745.png)
+     - [스프링 데이터 JPA 반환타입 레퍼런스](https://docs.spring.io/spring-data/jpa/reference/#repository-query-return-types)
+
    - 순수 JPA 페이징과 정렬
 
    - 스프링 데이터 JPA 페이징과 정렬

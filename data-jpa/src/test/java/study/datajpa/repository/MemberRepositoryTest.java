@@ -158,4 +158,22 @@ class MemberRepositoryTest {
             System.out.println("member == " + member);
         }
     }
+
+    @Test
+    @DisplayName("반환타입 테스트")
+    public void returnType() {
+        Member a = new Member("AAA", 10);
+        Member b = new Member("BBB", 20);
+        memberRepository.save(a);
+        memberRepository.save(b);
+
+
+        List<Member> aaa = memberRepository.findListByUsername("B"); //JPA에서 List는 null 체크 코드를 따로 만들지 않아도 된다. 왜냐하면 JPA가 알아서 empty 체크를 해서 빈 컬렉션을 생성하기 때문
+        Member bbb = memberRepository.findMemberByUsername("C");
+        Optional<Member> ccc = memberRepository.findOptionalByUsername("D");
+
+        System.out.println("aaa == " + aaa);
+        System.out.println("bbb == " + bbb);
+        System.out.println("ccc == " + ccc.orElse(new Member("John Doe")));
+    }
 }
