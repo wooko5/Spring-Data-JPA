@@ -545,7 +545,7 @@
      - Optional
        - DB에 해당 데이터가 있을지 없을지 모른다면 꼭 Optional을 쓰는 것을 추천
      - 테스트 사진
-       - ![image-20231220022036745](C:\Users\wooko\AppData\Roaming\Typora\typora-user-images\image-20231220022036745.png)
+       - ![image-20231220022036745](https://github.com/wooko5/Spring-Data-JPA/assets/58154633/8da6bf01-ac87-4538-8d27-e7200ee6cee1)
      - [스프링 데이터 JPA 반환타입 레퍼런스](https://docs.spring.io/spring-data/jpa/reference/#repository-query-return-types)
 
    - 순수 JPA 페이징과 정렬
