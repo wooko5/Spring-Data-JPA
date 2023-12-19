@@ -12,6 +12,7 @@ spring:
       hibernate:
 #        show_sql: true # 콘솔창에 하이버네이트 실행 SQL을 남김
         format_sql: true
+        dialect: org.hibernate.dialect.Oracle10gDialect
 
 logging.level:
   org.hibernate.SQL: debug # logger를 통해 하이버네이트 실행 SQL을 남김

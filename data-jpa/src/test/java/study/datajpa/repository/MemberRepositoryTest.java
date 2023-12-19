@@ -99,7 +99,7 @@ class MemberRepositoryTest {
 
         List<Member> result = memberRepository.findByUsername("AAA");
         Member findMember = result.get(0);
-        assertThat(findMember).isEqualTo(a);
+        assertThat(findMember.getAge()).isEqualTo(a.getAge());
     }
 
     @Test

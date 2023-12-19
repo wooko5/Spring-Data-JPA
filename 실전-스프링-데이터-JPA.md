@@ -550,6 +550,48 @@
 
    - 순수 JPA 페이징과 정렬
 
+     - 코드
+
+       - ```java
+         public List<Member> findByPage(int age, int offset, int limit){
+         return entityManager.createQuery("select m from Member m where m.age = :age order by m.username desc")
+                 .setParameter("age" ,age)
+                 .setFirstResult(offset)
+                 .setMaxResults(limit)
+                 .getResultList();
+         }
+         
+         public long totalCount(int age){
+         return entityManager.createQuery("select count(m) from Member m where m.age = :age", Long.class)
+                 .setParameter("age", age)
+                 .getSingleResult();
+         }
+         ```
+
+     - application.yml
+
+       - limit, offset 쿼리를 오라클 형식으로 보고싶을 때, `dialect`를 한 줄 추가
+
+       - ```yaml
+         spring:
+           datasource:
+             url: jdbc:h2:tcp://localhost/~/datajpa
+             username: sa
+             password:
+             driver-class-name: org.h2.Driver
+         
+           jpa:
+             hibernate:
+               ddl-auto: create
+             properties:
+               hibernate:
+                 format_sql: true
+                 dialect: org.hibernate.dialect.Oracle10gDialect #추가
+         
+         ```
+
+         
+
    - 스프링 데이터 JPA 페이징과 정렬
 
    - 벌크성 수정 쿼리
