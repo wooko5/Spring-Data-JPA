@@ -4,6 +4,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import study.datajpa.dto.MemberDto;
@@ -12,6 +16,7 @@ import study.datajpa.entity.Team;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -176,4 +181,73 @@ class MemberRepositoryTest {
         System.out.println("bbb == " + bbb);
         System.out.println("ccc == " + ccc.orElse(new Member("John Doe")));
     }
+
+    @Test
+    @DisplayName("스프링 데이터 JPA의 페이징 처리 테스트")
+    public void paging(){
+        //given
+        memberRepository.save(new Member("member1", 10));
+        memberRepository.save(new Member("member2", 10));
+        memberRepository.save(new Member("member3", 10));
+        memberRepository.save(new Member("member4", 10));
+        memberRepository.save(new Member("member5", 10));
+
+        int age = 10;
+        //첫 번째 페이지인 '0'에서 3 크기의 size를 'username' 기반으로 내림차순으로 가져와라
+        PageRequest pageRequest = PageRequest.of(0, 3, Sort.by(Sort.Direction.DESC, "username")); // 정렬도 복잡해지면 @Query에 넣는걸 추천
+
+        //when
+        Page<Member> page = memberRepository.findByAge(age, pageRequest);
+
+        //DTO로 변환함
+        Page<MemberDto> toMap = page.map(member -> new MemberDto(member.getId(), member.getUsername(), member.getTeam().getName()));
+
+        //then
+        List<Member> content = page.getContent();
+        long totalCount = page.getTotalElements();
+
+        for (Member member : content) {
+            System.out.println("member == " + member);
+        }
+        System.out.println("totalCount == " + totalCount);
+
+        assertThat(content.size()).isEqualTo(3); // 한 페이지의 크기
+        assertThat(page.getTotalElements()).isEqualTo(5); // 전체 페이지의 데이터 크기
+        assertThat(page.getNumber()).isEqualTo(0); // 페이지 번호(index)
+        assertThat(page.getTotalPages()).isEqualTo(2); // 전체 페이지 개수
+        assertThat(page.isFirst()).isTrue(); // 현재 페이지가 첫 페이지 인가
+        assertThat(page.hasNext()).isTrue(); // 다음 페이지가 존재하는가
+    }
+
+//    @Test
+//    @DisplayName("스프링 데이터 JPA의 슬라이스 처리 테스트")
+//    public void slicing(){
+//        //given
+//        memberRepository.save(new Member("member1", 10));
+//        memberRepository.save(new Member("member2", 10));
+//        memberRepository.save(new Member("member3", 10));
+//        memberRepository.save(new Member("member4", 10));
+//        memberRepository.save(new Member("member5", 10));
+//
+//        int age = 10;
+//        //첫 번째 페이지인 '0'에서 3 크기의 size를 'username' 기반으로 내림차순으로 가져와라
+//        PageRequest pageRequest = PageRequest.of(0, 3, Sort.by(Sort.Direction.DESC, "username"));
+//
+//        //when
+//        Slice<Member> slice = memberRepository.findByAge(age, pageRequest);
+//
+//        //then
+//        List<Member> content = slice.getContent();
+//
+//        assertThat(content.size()).isEqualTo(3); // 한 페이지의 크기
+//        assertThat(slice.getNumber()).isEqualTo(0); // 페이지 번호(index)
+//        assertThat(slice.isFirst()).isTrue(); // 현재 페이지가 첫 페이지 인가
+//        assertThat(slice.hasNext()).isTrue(); // 다음 페이지가 존재하는가
+//
+//        /**
+//         * Slice는 전체 페이지의 데이터 크기, 전체 페이지 개수를 확인하는 메소드가 없음(totalCount 쿼리를 호출하지 않기 때문)
+//         * slice.getTotalElements().isEqualTo(5); // X
+//         * slice.getTotalPages().isEqualTo(2); // X
+//         */
+//    }
 }

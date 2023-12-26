@@ -590,9 +590,65 @@
          
          ```
 
-         
-
    - 스프링 데이터 JPA 페이징과 정렬
+
+     - 페이징과 정렬 파라미터
+
+       - `org.springframework.data.domain.Sort`
+         - 정렬 기능
+       - `org.springframework.data.domain.Pageable`
+         - 페이징 기능(내부에 Sort 포함)
+       - TIP
+         - 관계형DB든 NoSQL이든 `스프링 데이터 JPA`를 통해 페이징/정렬 기능을 인터페이스로 공통화해서 구현함
+         - 스프링 데이터 JPA는 첫 번째 페이지를 0부터 시작
+
+     - 특별한 반환 타입
+
+       - `org.springframework.data.domain.Page`
+
+         - 총 개수(count)를 결과에 포함해서, 출력하는 페이징 기능
+
+       - `org.springframework.data.domain.Slice`
+
+         - 총 개수(count)를 결과에 포함하지 않고, 출력하는 페이징 기능
+
+           - ```tex
+             Slice는 전체 페이지의 데이터 크기, 
+             전체 페이지 개수를 확인하는 메소드가 없음(totalCount 쿼리를 호출하지 않기 때문)
+             
+             slice.getTotalElements().isEqualTo(5); // X
+             slice.getTotalPages().isEqualTo(2); // X
+             ```
+
+         - 모바일 같은 경우, 사용자가 스크롤을 내릴 때마다 새로운 페이지를 반환해야 한다면 굳이 총 개수(count)를 알 필요 없음
+
+         - ```sql
+           /* 내부적으로 limit + 1조회 */
+           select 
+           	member_id as member_i1_0_
+           	, member0_.age as age2_0_
+           	, member0_.team_id as team_id4_0_
+           	, member0_.username as username3_0_ 
+           from member member0_ 
+           where member0_.age=10 
+           order by member0_.username desc 
+           limit 4; /* '3'이 나와야하는데 슬라이스는 limit + 1 이므로 '4'가 출력*/
+           ```
+
+       - `List`
+
+         - 총 개수(count) 쿼리 없이 결과만 반환
+
+     - 주의
+
+       - SQL문이 복잡해지면 COUNT 쿼리를 따로 작성하는 것이 좋음(단순한 SQL문이면 따로 COUNT문을 따로 선언 X)
+
+       - ```java
+         @Query(value = "select m from Member m left join m.team t", countQuery = "select count(m.username) from Member m")
+         Page<Member> findByAge(int age, Pageable pageable);
+         ```
+
+       - 정렬도 너무 복잡해지면 `PageRequest.of()`에 넣지말고 `@Query`에 작성하자
 
    - 벌크성 수정 쿼리
 
