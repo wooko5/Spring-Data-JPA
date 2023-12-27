@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,9 +13,10 @@ import study.datajpa.dto.MemberDto;
 import study.datajpa.entity.Member;
 import study.datajpa.entity.Team;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -31,6 +31,9 @@ class MemberRepositoryTest {
 
     @Autowired
     TeamRepository teamRepository;
+
+    @PersistenceContext
+    EntityManager entityManager;
 
     @Test
     public void testMember() {
@@ -250,4 +253,29 @@ class MemberRepositoryTest {
 //         * slice.getTotalPages().isEqualTo(2); // X
 //         */
 //    }
+
+    @Test
+    @DisplayName("스프링 데이터 JPA의 벌크성 수정 쿼리 테스트")
+    public void bulkUpdate(){
+        //given
+        memberRepository.save(new Member("member1", 10));
+        memberRepository.save(new Member("member2", 19));
+        memberRepository.save(new Member("member3", 28));
+        memberRepository.save(new Member("member4", 21));
+        memberRepository.save(new Member("member5", 40));
+        int age = 20;
+
+        //when
+        int resultCount = memberRepository.bulkAgePlus(age);
+//        entityManager.flush(); // DB와 영속성 컨텍스트의 데이터 중에 차이가 발생하면 동기화 시켜주는 메소드, 벌크성 수정을 영속성 컨텍스트에서도 반영하기 위함
+//        entityManager.clear(); // 만약 해당 작업을 안 하고싶다면 @Modifying(clearAutomatically = true) 작성
+
+        List<Member> result = memberRepository.findByUsername("member5");
+        Member findMember = result.get(0);
+        System.out.println("member5 == " + findMember);
+
+        //then
+        assertThat(resultCount).isEqualTo(3);
+        assertThat(findMember.getAge()).isEqualTo(41); //오류: DB에는 bulk성 수정SQL문으로 41살이지만, 영속성 컨텍스트에서는 아직 40살임
+    }
 }

@@ -17,7 +17,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @SpringBootTest
 @Transactional
-//@Rollback(value = false) // 테스트 데이터를 보고싶다면 해당 어노테이션을 작성
+@Rollback(value = false) // 테스트 데이터를 보고싶다면 해당 어노테이션을 작성
 class MemberJpaRepositoryTest {
 
     @Autowired
@@ -105,5 +105,23 @@ class MemberJpaRepositoryTest {
         //then
         assertThat(members.size()).isEqualTo(3);
         assertThat(totalCount).isEqualTo(5);
+    }
+
+    @Test
+    @DisplayName("순수 JPA의 벌크성 수정 쿼리 테스트")
+    public void bulkUpdate(){
+        //given
+        memberJpaRepository.save(new Member("member1", 10));
+        memberJpaRepository.save(new Member("member2", 19));
+        memberJpaRepository.save(new Member("member3", 28));
+        memberJpaRepository.save(new Member("member4", 21));
+        memberJpaRepository.save(new Member("member5", 40));
+        int age = 20;
+
+        //when
+        int resultCount = memberJpaRepository.bulkAgePlus(age);
+
+        //then
+        assertThat(resultCount).isEqualTo(3);
     }
 }

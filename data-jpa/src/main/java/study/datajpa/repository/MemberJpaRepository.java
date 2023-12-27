@@ -29,11 +29,11 @@ public class MemberJpaRepository {
         return entityManager.createQuery("select m from Member m", Member.class).getResultList();
     }
 
-    public Optional<Member> findById(Long memberId){
+    public Optional<Member> findById(Long memberId) {
         return Optional.ofNullable(entityManager.find(Member.class, memberId));
     }
 
-    public long count(){
+    public long count() {
         return entityManager.createQuery("select count(m) from Member m", Long.class).getSingleResult();
     }
 
@@ -41,30 +41,38 @@ public class MemberJpaRepository {
         return entityManager.find(Member.class, id);
     }
 
-    public List<Member> findByUsernameAndGreaterThanAge(String username, int age){
+    public List<Member> findByUsernameAndGreaterThanAge(String username, int age) {
         return entityManager.createQuery("select m from Member m where m.username = :username and m.age > :age")
                 .setParameter("username", username)
                 .setParameter("age", age)
                 .getResultList();
     }
 
-    public List<Member> findByUsername(String username){
+    public List<Member> findByUsername(String username) {
         return entityManager.createNamedQuery("Member.findByUsername", Member.class)
                 .setParameter("username", username)
                 .getResultList();
     }
 
-    public List<Member> findByPage(int age, int offset, int limit){
+    public List<Member> findByPage(int age, int offset, int limit) {
         return entityManager.createQuery("select m from Member m where m.age = :age order by m.username desc")
-                .setParameter("age" ,age)
+                .setParameter("age", age)
                 .setFirstResult(offset)
                 .setMaxResults(limit)
                 .getResultList();
     }
 
-    public long totalCount(int age){
+    public long totalCount(int age) {
         return entityManager.createQuery("select count(m) from Member m where m.age = :age", Long.class)
                 .setParameter("age", age)
                 .getSingleResult();
+    }
+
+    public int bulkAgePlus(int age) {
+        return entityManager.createQuery(
+                        "update Member m set m.age = m.age + 1 " +
+                                "where m.age >= :age")
+                .setParameter("age", age)
+                .executeUpdate();
     }
 }

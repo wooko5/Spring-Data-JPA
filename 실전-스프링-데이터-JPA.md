@@ -652,6 +652,53 @@
 
    - 벌크성 수정 쿼리
 
+     - 개념
+
+       - 한 개씩 update문을 처리하는게 아니라 한번에 update문을 처리할 때 쓰는 SQL문을 벌크성 수정 쿼리라고 함
+
+     - 순수 JPA
+
+       - ```java
+         public int bulkAgePlus(int age) {
+             return entityManager.createQuery(
+                 "update Member m set m.age = m.age + 1 " +
+                 "where m.age >= :age")
+                 .setParameter("age", age)
+                 .executeUpdate();
+         }
+         ```
+
+     - 스프링 데이터 JPA
+
+       - ```java
+         @Modifying(clearAutomatically = true) //해당 어노테이션이 있어야 .executeUpdate() 같은 역할을 함
+         @Query("update Member m set m.age = m.age + 1 where m.age >= :age")
+         int bulkAgeUpdate(@Param("age") int age);
+         ```
+
+       - `@Modifying`가 없다면 update문이 list나 single result를 호출함
+
+     - 공통 문제
+
+       - 순수 JPA든 스프링 데이터 JPA든 bulk성 update는 엔티티의 영속성 생애주기를 무시하고, 직접 DB에 쿼리를 날림
+       - 그래서 영속성 컨텍스트 안에 있는 엔티티 정보는 DB와는 다른 이전 정보를 가지고 있기 때문에
+       - DB에는 bulk성 수정 SQL문으로 41살이지만, 영속성 컨텍스트에서는 아직 40살이기 때문에 오류 발생
+
+     - 해결
+
+       - DB와 영속성 컨텍스트의 데이터 차이를 해결하기 위해서 `EntityManager`의 `flush()`, `clear()`를 이용한다
+
+       - ```java
+         entityManager.flush(); // DB와 영속성 컨텍스트의 데이터 중에 차이가 발생하면 동기화 시켜주는 메소드, 벌크성 수정을 영속성 컨텍스트에서도 반영하기 위함
+         entityManager.clear(); // 만약 해당 작업을 안 하고싶다면 @Modifying(clearAutomatically = true) 작성
+         ```
+
+       - 물론 벌크성 수정처리 이후에 API가 종료되거나 다른 트랜잭션에서 다른 로직이 처리되는거면 상관없음
+
+       - 하지만 벌크성 수정처리가 발생한 같은 트랜잭션에서 다른 로직이 처리된다면 오류가 발생할 가능성이 큼
+
+       - JPA를 MyBatis, JDBC 템플릿 등과 같이 쓸 때, SQL mapper가 DB에 직접 SQL문을 처리하는걸 JPA가 인식하지 못 하므로 DB와 영속성 컨텍스트의 데이터가 차이날 수 있다. 그러므로 clear(), flush()를 하는걸 추천 
+
    - @EntityGraph
 
    - JPA Hint & Lock
