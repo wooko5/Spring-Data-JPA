@@ -709,7 +709,7 @@
 
        - 지연 로딩(fetch = FetchType.LAZY)으로 설정된 엔티티는 실제로 호출하기 전까지는 DB에서 조회하지 않음
        - 이때 영속성 컨텍스트에 없는 엔티티를 호출하면 JPA가 사용자에게 프록시 객체를 전달하고, 실제 해당 엔티티를 사용하면 DB에서 조회해서 영속성 컨텍스트로 가져옴
-       - ![image-20231228174254118](C:\Users\wooko\AppData\Roaming\Typora\typora-user-images\image-20231228174254118.png)
+       - ![image-20231228174254118](https://github.com/wooko5/Spring-Data-JPA/assets/58154633/ded475c3-8878-4ace-bdba-bbfb10ec7330)
 
      - N + 1
 
@@ -727,7 +727,7 @@
            List<Member> findMemberFetchJoin();
            ```
 
-         - ![image-20231228180021839](C:\Users\wooko\AppData\Roaming\Typora\typora-user-images\image-20231228180021839.png)
+         - ![image-20231228180021839](https://github.com/wooko5/Spring-Data-JPA/assets/58154633/16ee0942-8893-493e-bdb6-a0e39b929cbd)
 
      - N + 1 해결방법 2
 
