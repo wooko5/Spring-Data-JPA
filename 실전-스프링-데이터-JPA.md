@@ -693,13 +693,62 @@
          entityManager.clear(); // 만약 해당 작업을 안 하고싶다면 @Modifying(clearAutomatically = true) 작성
          ```
 
-       - 물론 벌크성 수정처리 이후에 API가 종료되거나 다른 트랜잭션에서 다른 로직이 처리되는거면 상관없음
+       - 물론 벌크성 수정처리 이후에 API가 종료되거나 다른 트랜잭션에서 비즈니스 로직이 처리되는거면 상관없음
 
        - 하지만 벌크성 수정처리가 발생한 같은 트랜잭션에서 다른 로직이 처리된다면 오류가 발생할 가능성이 큼
 
        - JPA를 MyBatis, JDBC 템플릿 등과 같이 쓸 때, SQL mapper가 DB에 직접 SQL문을 처리하는걸 JPA가 인식하지 못 하므로 DB와 영속성 컨텍스트의 데이터가 차이날 수 있다. 그러므로 clear(), flush()를 하는걸 추천 
 
    - @EntityGraph
+
+     - TODO
+
+       - Fetch Join에 대해 모르면 실무에서 JPA를 사용하긴 힘듦, 잘 알아두자
+
+     - 프록시 객체
+
+       - 지연 로딩(fetch = FetchType.LAZY)으로 설정된 엔티티는 실제로 호출하기 전까지는 DB에서 조회하지 않음
+       - 이때 영속성 컨텍스트에 없는 엔티티를 호출하면 JPA가 사용자에게 프록시 객체를 전달하고, 실제 해당 엔티티를 사용하면 DB에서 조회해서 영속성 컨텍스트로 가져옴
+       - ![image-20231228174254118](C:\Users\wooko\AppData\Roaming\Typora\typora-user-images\image-20231228174254118.png)
+
+     - N + 1
+
+       - 테스트 코드에서 Member 리스트를 1번 조회했는데 실제로는 Team 조회 쿼리 2개까지 총 3번 출력
+         -  Member 1번 조회 + Team N(2)번 조회
+
+     - N + 1 해결방법 1
+
+       - Fetch Join
+
+         - Member를 조회할 때, Member와 연관관계인 엔티티도 모두 한번에 가져와서 프록시가 아닌 진짜 엔티티 정보를 조회
+
+         - ```java
+           @Query("select m from Member m left join fetch m.team")
+           List<Member> findMemberFetchJoin();
+           ```
+
+         - ![image-20231228180021839](C:\Users\wooko\AppData\Roaming\Typora\typora-user-images\image-20231228180021839.png)
+
+     - N + 1 해결방법 2
+
+       - @EntityGraph
+
+         - ```java
+           @Override
+           @EntityGraph(attributePaths = {"team"}) // Member 조회 시, 연관된 엔티티 중에 Fetch Join으로 한번에 가져올 엔티티를 선언하는 어노테이션
+           List<Member> findAll();
+           
+           @Query("select m from Member m")
+           @EntityGraph(attributePaths = {"team"})
+           List<Member> findMemberEntityGraph();
+           
+           @EntityGraph(attributePaths = {"team"})
+           List<Member> findEntityGraphByUsername(@Param("username") String username);
+           ```
+
+     - TIP
+
+       - 스프링 데이터 JPA를 알기보단 JPA를 알면 문제 상황을 더 빨리 해결할 수 있으므로 JPA 도서를 함 읽어보기
 
    - JPA Hint & Lock
 

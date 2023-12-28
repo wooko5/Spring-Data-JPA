@@ -187,7 +187,7 @@ class MemberRepositoryTest {
 
     @Test
     @DisplayName("스프링 데이터 JPA의 페이징 처리 테스트")
-    public void paging(){
+    public void paging() {
         //given
         memberRepository.save(new Member("member1", 10));
         memberRepository.save(new Member("member2", 10));
@@ -256,7 +256,7 @@ class MemberRepositoryTest {
 
     @Test
     @DisplayName("스프링 데이터 JPA의 벌크성 수정 쿼리 테스트")
-    public void bulkUpdate(){
+    public void bulkUpdate() {
         //given
         memberRepository.save(new Member("member1", 10));
         memberRepository.save(new Member("member2", 19));
@@ -277,5 +277,39 @@ class MemberRepositoryTest {
         //then
         assertThat(resultCount).isEqualTo(3);
         assertThat(findMember.getAge()).isEqualTo(41); //오류: DB에는 bulk성 수정SQL문으로 41살이지만, 영속성 컨텍스트에서는 아직 40살임
+    }
+
+    @Test
+    @DisplayName("스프링 데이터 JPA의 @EntityGraph 테스트")
+    public void findMemberLazy() {
+
+        //given
+        Team teamA = new Team("teamA");
+        Team teamB = new Team("teamB");
+        teamRepository.save(teamA);
+        teamRepository.save(teamB);
+
+        Member memberA = new Member("memberA", 10, teamA); // memberA -> teamA
+        Member memberB = new Member("memberB", 10, teamB); // memberB -> teamB
+        memberRepository.save(memberA);
+        memberRepository.save(memberB);
+
+        entityManager.flush();
+        entityManager.clear();
+
+        //when
+//        List<Member> members = memberRepository.findMemberFetchJoin();
+//        List<Member> members = memberRepository.findAll();
+//        List<Member> members = memberRepository.findMemberEntityGraph();
+        List<Member> members = memberRepository.findEntityGraphByUsername("memberA");
+
+        for (Member member : members) {
+            System.out.println("member == " + member);
+            System.out.println("team.getClass() == " + member.getTeam().getClass()); // 프록시 객체
+            System.out.println("team == " + member.getTeam().getName());
+        }
+
+        //then
+
     }
 }
