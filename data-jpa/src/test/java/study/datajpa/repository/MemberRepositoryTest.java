@@ -303,13 +303,45 @@ class MemberRepositoryTest {
 //        List<Member> members = memberRepository.findMemberEntityGraph();
         List<Member> members = memberRepository.findEntityGraphByUsername("memberA");
 
+        //then
         for (Member member : members) {
             System.out.println("member == " + member);
             System.out.println("team.getClass() == " + member.getTeam().getClass()); // 프록시 객체
             System.out.println("team == " + member.getTeam().getName());
         }
+    }
+
+    @Test
+    @DisplayName("JPA Hint")
+    public void queryHint(){
+        //given
+        Member member = new Member("memberA", 10);
+        memberRepository.save(member);
+        entityManager.flush();
+        entityManager.clear();
+
+        //when
+        Member foundMember = memberRepository.findReadOnlyByUsername(member.getUsername());
+        foundMember.setUsername("memberB");
+        entityManager.flush();
 
         //then
-
     }
+
+    @Test
+    @DisplayName("JPA Lock")
+    public void queryLock(){
+        //given
+        Member member = new Member("memberA", 10);
+        memberRepository.save(member);
+        entityManager.flush();
+        entityManager.clear();
+
+        //when
+        List<Member> members = memberRepository.findLockByUsername(member.getUsername());
+
+        //then
+        assertThat(members.size()).isEqualTo(1);
+    }
+
 }

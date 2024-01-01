@@ -689,7 +689,7 @@
        - DB와 영속성 컨텍스트의 데이터 차이를 해결하기 위해서 `EntityManager`의 `flush()`, `clear()`를 이용한다
 
        - ```java
-         entityManager.flush(); // DB와 영속성 컨텍스트의 데이터 중에 차이가 발생하면 동기화 시켜주는 메소드, 벌크성 수정을 영속성 컨텍스트에서도 반영하기 위함
+         entityManager.flush(); // DB와 영속성 컨텍스트의 1차 캐시 데이터 사이에 차이가 발생하면 동기화 시켜주는 메소드, 벌크성 수정을 영속성 컨텍스트에서도 반영하기 위함
          entityManager.clear(); // 만약 해당 작업을 안 하고싶다면 @Modifying(clearAutomatically = true) 작성
          ```
 
@@ -697,7 +697,7 @@
 
        - 하지만 벌크성 수정처리가 발생한 같은 트랜잭션에서 다른 로직이 처리된다면 오류가 발생할 가능성이 큼
 
-       - JPA를 MyBatis, JDBC 템플릿 등과 같이 쓸 때, SQL mapper가 DB에 직접 SQL문을 처리하는걸 JPA가 인식하지 못 하므로 DB와 영속성 컨텍스트의 데이터가 차이날 수 있다. 그러므로 clear(), flush()를 하는걸 추천 
+       - JPA를 MyBatis, JDBC 템플릿 등과 같이 쓸 때, SQL mapper가 DB에 직접 SQL문을 처리하는걸 JPA가 인식하지 못 하므로 DB와 영속성 컨텍스트의 데이터가 차이날 수 있다. 그러므로 이때는 clear(), flush()를 하는걸 추천 
 
    - @EntityGraph
 
@@ -751,6 +751,38 @@
        - 스프링 데이터 JPA를 알기보단 JPA를 알면 문제 상황을 더 빨리 해결할 수 있으므로 JPA 도서를 함 읽어보기
 
    - JPA Hint & Lock
+
+     - 개념
+
+       - JPA 구현체에게 제공하는 힌트를 의미
+       - **JPA에서 제공하는게 아닌 Hibernate에서 제공함**
+
+     - 상황
+
+       - Dirty checking할 때, 원본과 사본 데이터(스냅샷) 2개 가지고 변경된 점을 인지하고 수정함.
+       - 문제는 단순 조회 때도 데이터 2개를 사용하기 때문에 메모리 낭비가 발생함
+       - 이를 해결하기 위해 Hibernate에서 제공하는 JPA Hint를 사용할 수 있음
+
+     - 코드
+
+       - ```java
+         @QueryHints(value = @QueryHint(name = "org.hibernate.readOnly", value = "true"))
+         Member findReadOnlyByUsername(String username);
+         ```
+
+     - JPA hint TIP
+
+       - `@QueryHint(name = "org.hibernate.readOnly", value = "true")`로 모든 조회 API에 옵션을 넣어줘도 극적인 성능최적화 효과를 기대하기는 어려움 
+       - 실무에서의 대부분 성능이 안 나오는 DB 문제는 복잡한 SQL문이 비효율적으로 처리되는 등의 문제임
+       - 그쯤 되면 readOnly 옵션으로 해결할게 아니라 해당 SQL문을 수정하든가 아님 DB에 캐시를 설치해서 처리속도를 높여야함
+
+     - JPA lock TIP
+
+       - 실시간 트래픽이 많은 서비스에서는 가급적이면 LOCK을 걸지 않거나 굳이 걸어야 하면 Optimistic Lock을 추천
+
+     - TODO
+
+       - JPA책 마지막에 보면 JPA의 Lock의 레벨에 따른 설명이 자세하게 나와있음 추후에 읽고 정리하기
 
 5. 확장 기능
 
