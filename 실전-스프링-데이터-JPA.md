@@ -32,7 +32,7 @@
      - TIP
        - 스프링부트 2.0부터는 디폴트 Connection Pool(CP)가 Hikari CP임
        - 이전에는 Tomcat-JDBC를 사용, Hikari CP의 성능이 더 좋기 떄문에 바뀜
-     - TODO: DB Connection Pool 개념과 Hikari CP의 성능이 더 좋은 이유?
+     - **TODO: DB Connection Pool 개념과 Hikari CP의 성능이 더 좋은 이유?**
        - 호기심 동기
          - 스프링부트 2.0부터는 디폴트 Connection Pool(CP)가 Hikari CP로 바뀌었는데 어떤 점 때문에 바뀌었을지 궁금해짐
        - DB Connection의 순서
@@ -146,7 +146,7 @@
      
        - 개발 서버에서는 몰라도, 운영 서버에서는 많은 로그를 남기는 것이 성능에 영향을 끼칠 수 있기 때문에 신중하게 선택해야함
        
-     - TODO: Optional을 언제 사용하는게 적절할까?
+     - **TODO: Optional을 언제 사용하는게 적절할까?**
      
        - 호기심 동기
      
@@ -357,7 +357,7 @@
            }
            ```
 
-     - TODO: Dirty Checking의 순서
+     - **TODO: Dirty Checking의 순서**
 
        - ```
          1) @Transactional처럼 트랜잭션을 커밋하겠다고 비즈니스 로직에서 JPA에게 요청을 보내면 flush()가 호출
@@ -701,7 +701,7 @@
 
    - @EntityGraph
 
-     - TODO
+     - **TODO**
 
        - Fetch Join에 대해 모르면 실무에서 JPA를 사용하긴 힘듦, 잘 알아두자
 
@@ -780,7 +780,7 @@
 
        - 실시간 트래픽이 많은 서비스에서는 가급적이면 LOCK을 걸지 않거나 굳이 걸어야 하면 Optimistic Lock을 추천
 
-     - TODO
+     - **TODO**
 
        - JPA책 마지막에 보면 JPA의 Lock의 레벨에 따른 설명이 자세하게 나와있음 추후에 읽고 정리하기
 
