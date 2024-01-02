@@ -1,5 +1,6 @@
 package study.datajpa.repository;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +9,8 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import study.datajpa.entity.Member;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -17,11 +20,16 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @SpringBootTest
 @Transactional
-//@Rollback(value = false) // 테스트 데이터를 보고싶다면 해당 어노테이션을 작성
+@Rollback(value = false) // 테스트 데이터를 보고싶다면 해당 어노테이션을 작성
 class MemberJpaRepositoryTest {
 
     @Autowired
     MemberJpaRepository memberJpaRepository;
+
+    @BeforeEach
+    public void clear(){
+        memberJpaRepository.deleteAll();
+    }
 
     @Test
     @DisplayName("순수 JPA의 저장 테스트")

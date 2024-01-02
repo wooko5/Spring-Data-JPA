@@ -75,4 +75,10 @@ public class MemberJpaRepository {
                 .setParameter("age", age)
                 .executeUpdate();
     }
+
+    public void deleteAll(){
+        entityManager.createQuery(
+                "delete from Member"
+        ).executeUpdate();
+    }
 }
