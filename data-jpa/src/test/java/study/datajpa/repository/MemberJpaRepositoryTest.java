@@ -17,13 +17,14 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @SpringBootTest
 @Transactional
-@Rollback(value = false) // 테스트 데이터를 보고싶다면 해당 어노테이션을 작성
+//@Rollback(value = false) // 테스트 데이터를 보고싶다면 해당 어노테이션을 작성
 class MemberJpaRepositoryTest {
 
     @Autowired
     MemberJpaRepository memberJpaRepository;
 
     @Test
+    @DisplayName("순수 JPA의 저장 테스트")
     void testMember() {
         Member member = new Member("memberA");
         Member savedMember = memberJpaRepository.save(member);
@@ -34,6 +35,7 @@ class MemberJpaRepositoryTest {
     }
 
     @Test
+    @DisplayName("순수 JPA의 CRUD 테스트")
     public void basicCRUD() {
         Member memberA = new Member("Apple");
         Member memberB = new Member("Microsoft");
@@ -61,6 +63,7 @@ class MemberJpaRepositoryTest {
     }
 
     @Test
+    @DisplayName("순수 JPA의 특정 이름, 나이 비교를 통한 조회 테스트")
     void findByUsernameAndGreaterThenAge() {
         Member a = new Member("AAA", 10);
         Member b = new Member("AAA", 20);
@@ -74,6 +77,7 @@ class MemberJpaRepositoryTest {
     }
 
     @Test
+    @DisplayName("순수 JPA의 특정 이름으로 사용자 조회 테스트")
     void findByUsername() {
         Member a = new Member("AAA", 10);
         Member b = new Member("BBB", 20);
