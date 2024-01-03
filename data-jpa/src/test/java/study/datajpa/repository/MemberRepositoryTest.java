@@ -203,7 +203,7 @@ class MemberRepositoryTest {
         Page<Member> page = memberRepository.findByAge(age, pageRequest);
 
         //DTO로 변환함
-        Page<MemberDto> toMap = page.map(member -> new MemberDto(member.getId(), member.getUsername(), member.getTeam().getName()));
+//        Page<MemberDto> toMap = page.map(member -> new MemberDto(member.getId(), member.getUsername(), member.getTeam().getName()));
 
         //then
         List<Member> content = page.getContent();

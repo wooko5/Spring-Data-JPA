@@ -344,7 +344,8 @@
                }
            
                public List<Member> findAll() {
-                   return entityManager.createQuery("select m from Member m", Member.class).getResultList();
+                   return entityManager.createQuery("select m from Member m", Member.class)
+                       .getResultList();
                }
            
                public Optional<Member> findById(Long memberId){
@@ -352,7 +353,8 @@
                }
            
                public long count(){
-                   return entityManager.createQuery("select count(m) from Member m", Long.class).getSingleResult();
+                   return entityManager.createQuery("select count(m) from Member m", Long.class)
+                       .getSingleResult();
                }
            }
            ```
@@ -525,10 +527,10 @@
 
        - ```java
          @Query("select m from Member m where m.username in :names")
-             List<Member> findByNames(@Param("names") List<String> names); // (4)파라미터 바인딩(컬렉션 파라미터 바인딩, 이름기반)
+         List<Member> findByNames(@Param("names") List<String> names); // (4)파라미터 바인딩(컬렉션 파라미터 바인딩, 이름기반)
          
          @Query("select m from Member m where m.username in :names")
-             List<Member> findByNames(@Param("names") Collection<String> names); // 다양한 input을 위해 List에서 Collection으로 바꿈
+         List<Member> findByNames(@Param("names") Collection<String> names); // 다양한 input을 위해 List에서 Collection으로 바꿈
          ```
 
    - 반환 타입
