@@ -788,6 +788,92 @@
 
 5. 확장 기능
 
+   - 사용자 정의 repository 구현
+
+     - 개요
+
+       - 스프링 데이터 JPA 리포지토리는 인터페이스만 정의하고 구현체는 스프링이 자동 생성
+       - 스프링 데이터 JPA가 제공하는 인터페이스를 직접 구현하면 구현해야 하는 기능이 너무 많음
+       - 근데 인터페이스의 메소드를 직접 구현하고 싶다면?
+         - 기본적인 메소드는 인터페이스에 있는걸 쓰고, 복잡한 쿼리의 90%는  QueryDsl로, 나머지 10%는 가끔 SpringJdbcTemplate/MyBatis을 사용
+
+     - 유의점
+
+       - 사용자 정의 repository 생성하려면 `리포지토리 인터페이스 이름 + Impl`라는 규칙을 반드시 지켜야한다. 그래야 스프링 데이터 JPA가 인식해서 스프링 빈으로 등록함
+
+       - ```java
+         public interface MemberRepository extends JpaRepository<Member, Long>, MemberRepositoryCustom {
+         }
+         
+         // MemberRepository + Impl = 해당 인터페이스와 맞춤
+         public class MemberRepositoryImpl implements MemberRepositoryCustom{
+         }
+         ```
+
+     - TIP
+
+       - ```
+         항상 사용자 정의 리포지토리가 필요한 것은 아니다. 그냥 임의의 리포지토리를 만들어도 된다. 
+         
+         예를 들어 MemberQueryRepository를 인터페이스가 아닌 클래스로 만들고 스프링 빈으로 등록해서 그냥 직접 사용해도 된다. 
+         
+         물론 이 경우 스프링 데이터 JPA와는 아무런 관계 없이 별도로 동작한다
+         ```
+
+       - SW 개발 시, 하나의 방법만 믿고 쓰는 방법은 매우 좋지 않은 습관이므로 다양한 방법 중에서 가장 유지/보수가 좋은 방법을 선택하는 개발자가 되도록 노력하자
+
+       - 핵심 비즈니스 로직이 아닌 화면에 맞춘 사용자 정의 repoisitory(인터페이스)를 구현할 때, 인터페이스를 implements해서 무한정 확장하지 말고 새로운 repository를 만들어서 분리하는 것을 추천
+
+         - repository를 너무 많이 implements하면 의존성이 너무 커짐
+
+   - Auditing
+
+     - 엔티티를 생성, 변경할 때 필수 정보
+
+       - 등록자
+       - 등록일시
+       - 수정자
+       - 수정일시
+
+     - 순수 JPA 방법
+
+       - ```java
+         @Getter
+         @MappedSuperclass //해당 어노테이션이 있어야 JpaBaseEntity를 상속받은 다른 엔티티가 해당 칼럼(생성/수정일시)을 사용할 수 있음
+         public class JpaBaseEntity {
+         
+             @Column(updatable = false)
+             private LocalDateTime createdDate;
+             private LocalDateTime updatedDate;
+         
+             @PrePersist
+             public void prePersist(){
+                 LocalDateTime now = LocalDateTime.now();
+                 this.createdDate = now;
+                 this.updatedDate = now; //최소 생성시 수정일시는 생성일시와 동일, null로 두지않음
+             }
+         }
+         
+         @Entity
+         public class Member extends JpaBaseEntity{
+         
+             @Id
+             @GeneratedValue
+             @Column(name = "member_id")
+             private Long id;
+             private String username;
+             private int age;
+         }
+         ```
+
+     - 스프링 데이터 JPA 방법
+
+       - 
+
+   - Web 확장 - 도메인 클래스 컨버터
+
+   - Web 확정 - 페이징과 정렬
+
 6. 스프링 데이터 JPA 분석
 
 7. 나머지 기능들

@@ -354,4 +354,10 @@ class MemberRepositoryTest {
         System.out.println(sInt); // 4294967295
     }
 
+    @Test
+    @DisplayName("사용자 정의 repository 구현 - JPA 직접 사용(EntityManager)")
+    public void callCustom(){
+        List<Member> result = memberRepository.findMemberCustom();
+    }
+
 }

@@ -1,19 +1,26 @@
 package study.datajpa.entity;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+import study.datajpa.repository.MemberRepository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest
 @Transactional
 class MemberTest {
 
     @PersistenceContext
     EntityManager entityManager;
+
+    @Autowired
+    MemberRepository memberRepository;
 
     @Test
     public void testEntity() {
@@ -45,5 +52,29 @@ class MemberTest {
             System.out.println("team = " + member.getTeam());
             System.out.println("=============END===============");
         }
+    }
+
+    @Test
+    @DisplayName("순수 JPA로 등록/수정일시 칼럼 생성 테스트")
+    public void jpaEventBaseEntity() throws InterruptedException {
+        //given
+        Member member = new Member("memberA");
+        memberRepository.save(member); //@PrePersist
+
+        Thread.sleep(100);
+        member.setUsername("memberB");
+
+        entityManager.flush(); //@PreUpdate
+        entityManager.clear();
+
+        //when
+        Member foundMember = memberRepository.findMemberByUsername("memberB");
+
+        //then
+        System.out.println("=================================================================");
+        System.out.println("foundMember.getCreatedDate() == " + foundMember.getCreatedDate());
+        System.out.println("foundMember.getUpdatedDate() == " + foundMember.getUpdatedDate());
+        System.out.println("=================================================================");
+        assertThat(foundMember.getId()).isEqualTo(member.getId());
     }
 }
