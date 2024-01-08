@@ -344,4 +344,14 @@ class MemberRepositoryTest {
         assertThat(members.size()).isEqualTo(1);
     }
 
+    @Test
+    @DisplayName("자바 unsigned int 테스트")
+    public void unsignedTest(){
+        // Java 8
+        int vInt = Integer.parseUnsignedInt("4294967295");
+        System.out.println(vInt); // -1
+        String sInt = Integer.toUnsignedString(vInt);
+        System.out.println(sInt); // 4294967295
+    }
+
 }
