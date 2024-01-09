@@ -16,7 +16,7 @@ public class JpaBaseEntity {
     private LocalDateTime updatedDate;
 
     @PrePersist
-    public void prePersist(){
+    public void prePersist() {
         LocalDateTime now = LocalDateTime.now();
         this.createdDate = now;
         this.updatedDate = now; //최소 생성시 수정일시는 생성일시와 동일, null로 두지않음

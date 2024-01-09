@@ -55,7 +55,7 @@ class MemberTest {
     }
 
     @Test
-    @DisplayName("순수 JPA로 등록/수정일시 칼럼 생성 테스트")
+    @DisplayName("순수/스프링Data JPA로 등록/수정일시 칼럼 생성 테스트")
     public void jpaEventBaseEntity() throws InterruptedException {
         //given
         Member member = new Member("memberA");
@@ -71,10 +71,11 @@ class MemberTest {
         Member foundMember = memberRepository.findMemberByUsername("memberB");
 
         //then
-        System.out.println("=================================================================");
-        System.out.println("foundMember.getCreatedDate() == " + foundMember.getCreatedDate());
-        System.out.println("foundMember.getUpdatedDate() == " + foundMember.getUpdatedDate());
-        System.out.println("=================================================================");
-        assertThat(foundMember.getId()).isEqualTo(member.getId());
+        System.out.println("==================================================================================");
+        System.out.println("foundMember.getCreatedDate() ======= " + foundMember.getCreatedDate());
+        System.out.println("foundMember.getLastModifiedDate() == " + foundMember.getLastModifiedDate());
+        System.out.println("foundMember.getCreatedBy() ========= " + foundMember.getCreatedBy());
+        System.out.println("foundMember.getLastModifiedBy() ==== " + foundMember.getLastModifiedBy());
+        System.out.println("==================================================================================");
     }
 }

@@ -868,7 +868,59 @@
 
      - 스프링 데이터 JPA 방법
 
-       - 
+       - ```java
+         //@EnableJpaAuditing(modifyOnCreate = false) //해당 옵션 사용 시, 처음에 update값이 처음에는 null로 들어감(create 값은 그대로)
+         @EnableJpaAuditing //해당 어노테이션을 선언해야 BaseEntity를 인식함(스프링 데이터 JPA)
+         @SpringBootApplication
+         public class DataJpaApplication {
+         
+             public static void main(String[] args) {
+                 SpringApplication.run(DataJpaApplication.class, args);
+             }
+         
+             @Bean
+             public AuditorAware<String> auditorProvider() {
+                 return () -> Optional.of(UUID.randomUUID().toString());
+             }
+         
+         //    @Bean //해당 익명 메소드를 람다로 바꾼 것
+         //    public AuditorAware<String> auditorProvider() {
+         //        return new AuditorAware<String>() {
+         //            @Override
+         //            public Optional<String> getCurrentAuditor() {
+         //                return Optional.of(UUID.randomUUID().toString());
+         //            }
+         //        };
+         //    }
+         }
+         
+         @EntityListeners(AuditingEntityListener.class) //해당 어노테이션이 있어야 데이터의 변경(C/U/D) 시 이벤트(@PreUpdated...)를 발생시킨다
+         @Getter
+         @MappedSuperclass
+         public class BaseEntity {
+         
+             @CreatedDate
+             @Column(updatable = false)
+             LocalDateTime createdDate;
+         
+             @LastModifiedDate
+             LocalDateTime lastModifiedDate;
+         
+             @CreatedBy
+             @Column(updatable = false)
+             String createdBy; //등록자
+         
+             @LastModifiedBy
+             String lastModifiedBy; //수정자
+         }
+         
+         @Entity
+         public class Member extends BaseEntity {
+         
+         }
+         ```
+       
+         
 
    - Web 확장 - 도메인 클래스 컨버터
 
