@@ -892,6 +892,7 @@
          //            }
          //        };
          //    }
+             
          }
          
          @EntityListeners(AuditingEntityListener.class) //해당 어노테이션이 있어야 데이터의 변경(C/U/D) 시 이벤트(@PreUpdated...)를 발생시킨다
@@ -920,9 +921,57 @@
          }
          ```
        
-         
+       - `DataJpaApplication` run 클래스에 @EnableJpaAuditing를 등록 시, 세션 정보나 스프링 시큐리티 로그인 정보에서 ID를 받을 수 있다
+       
+     - 전체 적용
+
+       - `@EntityListeners(AuditingEntityListener.class) `를 엔티티에 선언하는 것을 생략하고 스프링 데이터 JPA가 제공하는 이벤트를 엔티티 전체에 적용하려면 orm.xml에 다음과 같이 등록하면 된다.
+
+       - ```xml
+         <!-- META-INF/orm.xml -->
+         <?xml version="1.0" encoding="UTF-8"?>
+         <entity-mappings xmlns="http://xmlns.jcp.org/xml/ns/persistence/orm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence/orm http://xmlns.jcp.org/xml/ns/persistence/orm_2_2.xsd" version="2.2">
+          	<persistence-unit-metadata>
+          		<persistence-unit-defaults>
+          			<entity-listeners>
+          				<entity-listener class="org.springframework.data.jpa.domain.support.AuditingEntityListener"/>
+          			</entity-listeners>
+          		</persistence-unit-defaults>
+          	</persistence-unit-metadata>
+         </entity-mappings>
+         ```
 
    - Web 확장 - 도메인 클래스 컨버터
+
+     - 개념
+
+       - HTTP 파라미터로 넘어온 엔티티의 아이디로 엔티티 객체를 찾아서 바인딩함
+
+     - 코드
+
+       - ```java
+         /* 적용 전 */
+         @GetMapping("/members/v1/{id}")
+         public String findMemberV1(@PathVariable("id") Long id){
+             Member member = memberRepository.findById(id).orElse(new Member("John Doe"));
+             return member.getUsername();
+         }
+         
+         /* 적용 후 */
+         @GetMapping("/members/v2/{id}") //도메인 클래스 컨버터 - 실무에서 굳이 추천하지 않음
+         public String findMemberV2(@PathVariable("id") Member member){
+             return member.getUsername();
+         }
+         ```
+
+       - HTTP 요청은 회원 id 를 받지만 도메인 클래스 컨버터가 중간에 동작해서 회원 엔티티 객체를 반환
+
+       - 도메인 클래스 컨버터도 리파지토리를 사용해서 엔티티를 찾음
+
+     - 주의
+
+       - 도메인 클래스 컨버터로 엔티티를 파라미터로 받으면, 이 엔티티는 `단순 조회용으로만 사용`해야 함 
+       - 즉 트랜잭션이 없는 범위에서 엔티티를 조회했으므로, `엔티티를 변경해도 DB에 반영되지 않음`
 
    - Web 확정 - 페이징과 정렬
 
