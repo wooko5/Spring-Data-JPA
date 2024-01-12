@@ -13,6 +13,12 @@ spring:
 #        show_sql: true # 콘솔창에 하이버네이트 실행 SQL을 남김
         format_sql: true
 #        dialect: org.hibernate.dialect.Oracle10gDialect
+  data:
+    web:
+      pageable:
+        default-page-size: 10 # 기본 한 페이지 개수(미설정 시 자동으로 20개)
+        max-page-size: 2000 # 한 페이지 최대 데이터건수 2000개
+#        one-indexed-parameters: true # 페이지의 기본 시작 index를 0이 아닌 1부터 시작하는 옵션
 
 logging.level:
   org.hibernate.SQL: debug # logger를 통해 하이버네이트 실행 SQL을 남김

@@ -975,6 +975,48 @@
 
    - Web 확정 - 페이징과 정렬
 
+     - 메소드
+
+       - ```java
+         @GetMapping("/members")
+         public Page<Member> list(Pageable pageable) { //파라미터에 Pageable를 넣는 순간 스프링부트가 알아서 data binding 처리
+             return memberRepository.findAll(pageable);
+         }
+         ```
+
+     - 글로벌 페이징 설정
+
+       - ```yaml
+         spring:
+           data:
+             web:
+               pageable:
+                 default-page-size: 10 # 기본 한 페이지 개수(미설정 시 자동으로 20개)
+                 max-page-size: 2000 # 한 페이지 최대 데이터건수 2000개
+                 one-indexed-parameters: true # 페이지의 기본 시작 index를 0이 아닌 1부터 시작하는 옵션
+         ```
+
+     - 특정 메소드 페이징 설정
+
+       - ```java
+         //    @GetMapping("/members")
+         //    public Page<Member> listV1(@PageableDefault(size = 5, sort = {"id", "username"}) Pageable pageable) { //파라미터에 Pageable를 넣는 순간 스프링부트가 알아서 data binding 처리
+         //        return memberRepository.findAll(pageable);
+         //    }
+         
+         //    @GetMapping("/members") //DTO로 변환함
+         //    public Page<MemberDto> listV2(@PageableDefault(size = 5, sort = {"id", "username"}) Pageable pageable) {
+         //        Page<Member> page = memberRepository.findAll(pageable);
+         //        return page.map(member -> new MemberDto(member.getId(), member.getUsername(), null));
+         //    }
+         
+         @GetMapping("/members") //DTO로 변환 시, 즉시 converter로 쓸 수 있게 MemberDto 생성자 수정
+         public Page<MemberDto> listV3(@PageableDefault(size = 5, sort = {"id", "username"}) Pageable pageable) {
+             Page<Member> page = memberRepository.findAll(pageable);
+             return page.map(member -> new MemberDto(member));
+         }
+         ```
+
 6. 스프링 데이터 JPA 분석
 
 7. 나머지 기능들
