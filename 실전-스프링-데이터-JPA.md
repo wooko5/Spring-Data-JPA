@@ -973,7 +973,7 @@
        - 도메인 클래스 컨버터로 엔티티를 파라미터로 받으면, 이 엔티티는 `단순 조회용으로만 사용`해야 함 
        - 즉 트랜잭션이 없는 범위에서 엔티티를 조회했으므로, `엔티티를 변경해도 DB에 반영되지 않음`
 
-   - Web 확정 - 페이징과 정렬
+   - Web 확장 - 페이징과 정렬
 
      - 메소드
 
@@ -999,16 +999,16 @@
      - 특정 메소드 페이징 설정
 
        - ```java
-         //    @GetMapping("/members")
-         //    public Page<Member> listV1(@PageableDefault(size = 5, sort = {"id", "username"}) Pageable pageable) { //파라미터에 Pageable를 넣는 순간 스프링부트가 알아서 data binding 처리
-         //        return memberRepository.findAll(pageable);
-         //    }
+         @GetMapping("/members")
+         public Page<Member> listV1(@PageableDefault(size = 5, sort = {"id", "username"}) Pageable pageable) { //파라미터에 Pageable를 넣는 순간 스프링부트가 알아서 data binding 처리
+             return memberRepository.findAll(pageable);
+         }
          
-         //    @GetMapping("/members") //DTO로 변환함
-         //    public Page<MemberDto> listV2(@PageableDefault(size = 5, sort = {"id", "username"}) Pageable pageable) {
-         //        Page<Member> page = memberRepository.findAll(pageable);
-         //        return page.map(member -> new MemberDto(member.getId(), member.getUsername(), null));
-         //    }
+         @GetMapping("/members") //DTO로 변환함
+         public Page<MemberDto> listV2(@PageableDefault(size = 5, sort = {"id", "username"}) Pageable pageable) {
+             Page<Member> page = memberRepository.findAll(pageable);
+             return page.map(member -> new MemberDto(member.getId(), member.getUsername(), null));
+         }
          
          @GetMapping("/members") //DTO로 변환 시, 즉시 converter로 쓸 수 있게 MemberDto 생성자 수정
          public Page<MemberDto> listV3(@PageableDefault(size = 5, sort = {"id", "username"}) Pageable pageable) {
