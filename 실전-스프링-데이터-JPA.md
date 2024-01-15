@@ -945,7 +945,7 @@
 
      - 개념
 
-       - HTTP 파라미터로 넘어온 엔티티의 아이디로 엔티티 객체를 찾아서 바인딩함
+       - HTTP 파라미터로 넘어온 엔티티의 id로 엔티티 객체를 찾아서 바인딩함
 
      - 코드
 
@@ -1019,4 +1019,156 @@
 
 6. 스프링 데이터 JPA 분석
 
+   - 스프링 데이터 JPA 구현체 분석
+
+     - **TODO: SOAP vs REST API**
+
+     - SimpleJpaRepository
+
+       - 경로
+         - ![image-20240115102850983](C:\Users\USER\AppData\Roaming\Typora\typora-user-images\image-20240115102850983.png)
+         - ![image-20240115102915850](C:\Users\USER\AppData\Roaming\Typora\typora-user-images\image-20240115102915850.png)
+
+     - [@Repository](https://docs.spring.io/spring-framework/docs/5.3.30/javadoc-api/org/springframework/stereotype/Repository.html)
+
+       - 효과
+
+         - 어노테이션이 선언된 `해당 클래스를 Spring Bean의 Component scan 대상에 올리기`
+
+         -  JPA, JDBC등 다양한 데이터 영속성 계층에서 예외처리가 발생하면 JPA나 JDBC에서 고유의 예외처리를 `스프링 프레임워크에서 쓰는 예외처리로 변환함`
+
+           - 즉 데이터 접근을 JDBC에서 JPA로 바꾼다 해도 예외처리를 실행하는 메커니즘은 같기 때문에 상관없음
+
+         - ```
+           A class thus annotated is eligible for Spring DataAccessException translation when used in conjunction with a PersistenceExceptionTranslationPostProcessor. The annotated class is also clarified as to its role in the overall application architecture for the purpose of tooling, aspects, etc.
+           
+           https://goodteacher.tistory.com/698
+           
+           /* JPA 예외를 스프링 프레임워크가 추상화한 예외로 변환함 */
+           ```
+
+     - @Tranactional
+
+       - 코드
+
+         - ```java
+           @Repository
+           @Transactional(
+               readOnly = true
+           )
+           public class SimpleJpaRepository<T, ID> implements JpaRepositoryImplementation<T, ID> {
+               /**
+               * 'readOnly = true'시 EntityManager의 flush() 남용을 막을 수 있어서 조회 성능에 약간의 향상
+               /
+           }
+           ```
+
+         - Tranaction이 완료되면 JPA에서 flush()를 호출하는데 `readOnly = true`면 flush()를 호출하지 않음 ==> 변경감지가 일어나지 않음 ==> 조회는 데이터를 변경하지 않음
+
+       - 우선순위
+
+         - ```
+           클래스 메소드 -> 클래스 -> 인터페이스 메소드 -> 인터페이스
+           
+           클래스에 'readOnly=true'라고 해도, 해당 클래스의 메소드에 'readOnly=false'를 작성하면 false가 적용
+           ```
+
+     - save() 메소드
+
+       - 코드
+
+         - ```java
+           /**
+            * 파라미터로 들어온 Entity가
+            * 1)새로운 Entity라면 persist()
+            * 2)기존 Entity라면 merge()
+            */
+           @Transactional
+           public <S extends T> S save(S entity) {
+               Assert.notNull(entity, "Entity must not be null.");
+               if (this.entityInformation.isNew(entity)) {
+                   this.em.persist(entity);
+                   return entity;
+               } else {
+                   return this.em.merge(entity);
+               }
+           }
+           ```
+
+       - 유의점
+
+         - 대부분의 상황에서 JPA의 변경감지를 통해서 Entity를 수정하는 것을 매우 권장
+         - merge()는 비영속 상태의 Entity를 다시 영속 상태의 Entity로 만들 때 쓰는 것
+
+   - 새로운 Entity를 구별하는 방법
+
+     - 새로운 Entity를 판단하는 기본 전략
+
+       - 식별자가 객체일 때 `null` 로 판단
+       - 식별자가 자바 원시 타입(`primitive type: int, boolean, ...`)일 때 `0` 으로 판단
+         - int id = null, char id = null처럼 원시 타입은  객체가 아니라서 null 선언이 불가함 ==> `0`으로 판단 ==> 새로운 Entity로 인식
+       - `Persistable` 인터페이스를 구현해서 판단 로직 변경 가능
+
+     - 실제로 null인가
+
+       - persist() 호출 전
+         - ![image-20240115152815133](C:\Users\USER\AppData\Roaming\Typora\typora-user-images\image-20240115152815133.png)
+       - persist() 호출 후
+         - ![image-20240115153111949](C:\Users\USER\AppData\Roaming\Typora\typora-user-images\image-20240115153111949.png)
+
+     - @GeneratedValue가 없을 때 오류
+
+       - Item 코드
+
+         - ```java
+           @Entity
+           @Getter
+           @NoArgsConstructor(access = AccessLevel.PROTECTED)
+           public class Item {
+               @Id
+           //    @GeneratedValue
+               private Long id;
+           
+               private String itemName;
+           
+               public Item(Long id){
+                   this.id = id;
+               }
+           }
+           ```
+
+       - 분명히 Entity의 id를 설정했는데 실제로 insert문이 날아갈 때는 null로 설정
+
+         - ![image-20240115155422019](C:\Users\USER\AppData\Roaming\Typora\typora-user-images\image-20240115155422019.png)
+
+       - 이유
+
+         - SimpleJpaRepository 클래스에서 save() 메소드를 호출할 때 `if (this.entityInformation.isNew(entity))`라는 조건문이 존재
+         - 해당 조건문 때문에 새로운 Entity로 인식해야하지만 그렇지 못 하기 때문에 merge()로 처리
+         - ![image-20240115155451184](C:\Users\USER\AppData\Roaming\Typora\typora-user-images\image-20240115155451184.png)
+
+     - 해결
+
+       - save()보다는 persist()를 애용하자
+
+       - ```
+         참고: JPA 식별자 생성 전략이 `@GenerateValue` 면 `save()` 호출 시점에 식별자가 없으므로 새로운 엔티티로 인식해서 정상 동작한다. 
+         
+         그런데 JPA 식별자 생성 전략이 `@Id` 만 사용해서 직접 할당이면 이미 식별자 값이 있는 상태로 `save()` 를 호출한다. 
+         
+         따라서 이 경우 `merge()` 가 호출된다. `merge()` 는 우선 DB를 호출해서 값을 확인하고, DB에 값이 없으면 새로운 엔티티로 인지하므로 매우 비효율 적이다. 
+         
+         따라서 `Persistable` 를 사용해서 새로운 엔티티 확인 여부를 직접 구현하게는 효과적이다.
+         
+         참고로 등록시간( `@CreatedDate` )을 조합해서 사용하면 이 필드로 새로운 엔티티 여부를 편리하게 확인할 수
+         있다. (@CreatedDate에 값이 없으면 새로운 엔티티로 판단)
+         ```
+
+         
+
 7. 나머지 기능들
+
+   - Specifications(명세)
+   - Query by sample
+   - Projections
+   - Native Query
