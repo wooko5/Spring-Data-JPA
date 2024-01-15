@@ -1112,9 +1112,9 @@
      - 실제로 null인가
 
        - persist() 호출 전
-         - ![image-20240115152815133](C:\Users\USER\AppData\Roaming\Typora\typora-user-images\image-20240115152815133.png)
+         - ![image-20240115152815133](https://github.com/wooko5/Spring-Data-JPA/assets/58154633/1a730c66-aa7c-44f6-b4f0-30c7493873eb)
        - persist() 호출 후
-         - ![image-20240115153111949](C:\Users\USER\AppData\Roaming\Typora\typora-user-images\image-20240115153111949.png)
+         - ![image-20240115153111949](https://github.com/wooko5/Spring-Data-JPA/assets/58154633/3f2cee6c-1e84-4481-b77d-bb2d47162bb8)
 
      - @GeneratedValue가 없을 때 오류
 
@@ -1139,13 +1139,13 @@
 
        - 분명히 Entity의 id를 설정했는데 실제로 insert문이 날아갈 때는 null로 설정
 
-         - ![image-20240115155422019](C:\Users\USER\AppData\Roaming\Typora\typora-user-images\image-20240115155422019.png)
+         - ![image-20240115155422019](https://github.com/wooko5/Spring-Data-JPA/assets/58154633/e612944f-40c4-449b-83b6-1b73337d8ca8)
 
        - 이유
 
          - SimpleJpaRepository 클래스에서 save() 메소드를 호출할 때 `if (this.entityInformation.isNew(entity))`라는 조건문이 존재
          - 해당 조건문 때문에 새로운 Entity로 인식해야하지만 그렇지 못 하기 때문에 merge()로 처리
-         - ![image-20240115155451184](C:\Users\USER\AppData\Roaming\Typora\typora-user-images\image-20240115155451184.png)
+         - ![image-20240115155451184](https://github.com/wooko5/Spring-Data-JPA/assets/58154633/d0a3dd90-5b59-47e4-8c04-5ec195f999cc)
 
      - 해결
 
