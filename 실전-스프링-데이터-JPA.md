@@ -1026,8 +1026,8 @@
      - SimpleJpaRepository
 
        - 경로
-         - ![image-20240115102850983](C:\Users\USER\AppData\Roaming\Typora\typora-user-images\image-20240115102850983.png)
-         - ![image-20240115102915850](C:\Users\USER\AppData\Roaming\Typora\typora-user-images\image-20240115102915850.png)
+         - ![image-20240115102850983](https://github.com/wooko5/Spring-Data-JPA/assets/58154633/917b0517-13c7-44ba-b160-4a8bb4a1316f)
+         - ![image-20240115102915850](https://github.com/wooko5/Spring-Data-JPA/assets/58154633/07409ba8-43c5-44b0-ae66-ef79eb914c05)
 
      - [@Repository](https://docs.spring.io/spring-framework/docs/5.3.30/javadoc-api/org/springframework/stereotype/Repository.html)
 
