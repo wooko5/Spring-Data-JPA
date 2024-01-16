@@ -13,7 +13,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-public interface MemberRepository extends JpaRepository<Member, Long>, MemberRepositoryCustom {
+public interface MemberRepository extends JpaRepository<Member, Long>, MemberRepositoryCustom, JpaSpecificationExecutor<Member> {
     List<Member> findByUsernameAndAgeGreaterThan(String username, int age); //(1)메소드이름으로 쿼리생성
 
     List<Member> findTop3HelloBy(); //HelloBy만 쓰면 오류지만 findTop3 때문에 유효한 리미트 Query가 출력

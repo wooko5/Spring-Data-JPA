@@ -7,6 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import study.datajpa.dto.MemberDto;
@@ -313,7 +314,7 @@ class MemberRepositoryTest {
 
     @Test
     @DisplayName("JPA Hint")
-    public void queryHint(){
+    public void queryHint() {
         //given
         Member member = new Member("memberA", 10);
         memberRepository.save(member);
@@ -330,7 +331,7 @@ class MemberRepositoryTest {
 
     @Test
     @DisplayName("JPA Lock")
-    public void queryLock(){
+    public void queryLock() {
         //given
         Member member = new Member("memberA", 10);
         memberRepository.save(member);
@@ -346,7 +347,7 @@ class MemberRepositoryTest {
 
     @Test
     @DisplayName("자바 unsigned int 테스트")
-    public void unsignedTest(){
+    public void unsignedTest() {
         // Java 8
         int vInt = Integer.parseUnsignedInt("4294967295");
         System.out.println(vInt); // -1
@@ -356,8 +357,30 @@ class MemberRepositoryTest {
 
     @Test
     @DisplayName("사용자 정의 repository 구현 - JPA 직접 사용(EntityManager)")
-    public void callCustom(){
+    public void callCustom() {
         List<Member> result = memberRepository.findMemberCustom();
     }
 
+    @Test
+    @DisplayName("술어(predicate) 테스트")
+    public void specBasic() {
+        //given
+        Team team = new Team("Arsenal");
+        entityManager.persist(team);
+
+        Member memberA = new Member("jaeuk", 29, team);
+        Member memberB = new Member("minyoung", 26, team);
+        entityManager.persist(memberA);
+        entityManager.persist(memberB);
+
+        entityManager.flush();
+        entityManager.clear();
+
+        //when
+        Specification<Member> specification = MemberSpecifications.username("jaeuk").and(MemberSpecifications.teamName("Arsenal"));
+        List<Member> result = memberRepository.findAll(specification);
+
+        //then
+        assertThat(result.size()).isEqualTo(1);
+    }
 }

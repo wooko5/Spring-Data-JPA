@@ -245,6 +245,8 @@
        - 결론
        
          - Optional을 잘못 사용하는 것은 차라리 쓰지 않는 것만 못 하므로 써야할 때와 쓰지 말아야할 때를 구분하자
+         
+           
 
 2. 예제 도메인 모델
 
@@ -785,6 +787,8 @@
      - **TODO**
 
        - JPA책 마지막에 보면 JPA의 Lock의 레벨에 따른 설명이 자세하게 나와있음 추후에 읽고 정리하기
+       
+         
 
 5. 확장 기능
 
@@ -1198,9 +1202,59 @@
      
          
 
-7. 나머지 기능들
+7. 나머지 기능들 - 실무에서 잘 쓰이진 않음
 
    - Specifications(명세)
+   
+     - 유의점
+   
+       - 스프링 데이터 JPA는 JPA Criteria를 활용해서 이 개념을 사용할 수 있도록 지원하지만 실무에서 JPA Criteria를 사용하는 경우는 거의 없음
+       -  **실무에서는 JPA Criteria를 거의 안 씀! 대신에 QueryDSL을 사용하자.**
+   
+     - 술어 코드
+   
+       - ```java
+         public class MemberSpecifications {
+         
+             public static Specification<Member> teamName(final String teamName) {
+                 return new Specification<Member>() {
+                     @Override
+                     public Predicate toPredicate(Root<Member> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
+         
+                         if (!StringUtils.hasText(teamName)) {
+                             return null;
+                         }
+         
+                         //root는 엔티티를 의미
+                         Join<Member, Team> t = root.join("team", JoinType.INNER); //회원과 팀 조인
+                         return criteriaBuilder.equal(t.get("name"), teamName); //where문 작성: 팀명이 파라미터로 들어온 'teamName'과 같아야함
+                     }
+                 };
+             }
+         }
+         
+         /* 아래 코드는 람다로 개선한 코드 */
+         public class MemberSpecifications {
+         
+             public static Specification<Member> teamName(final String teamName) {
+                 return (root, query, criteriaBuilder) -> {
+         
+                     if (!StringUtils.hasText(teamName)) {
+                         return null;
+                     }
+                     
+                     Join<Member, Team> t = root.join("team", JoinType.INNER); //회원과 팀 조인
+                     return criteriaBuilder.equal(t.get("name"), teamName); //where문 작성: 팀명이 파라미터로 들어온 'teamName'과 같아야함
+                 };
+             }
+         }
+         
+         /* 명세를 정의하려면 Specification 인터페이스를 구현
+         명세를 정의할 때는 toPredicate(...) 메서드만 구현하면 되는데 JPA Criteria의 Root ,CriteriaQuery , CriteriaBuilder 클래스를 파라미터 제공함 */
+         ```
+   
    - Query by sample
+   
    - Projections
+   
    - Native Query
