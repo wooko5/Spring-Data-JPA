@@ -1289,7 +1289,19 @@
    
      - 장점
    
+       - 동적 쿼리를 편리하게 처리
+       - 도메인 객체를 그대로 사용
+       - 데이터 저장소를 RDB에서 NOSQL로 변경해도 코드 변경이 없게 추상화 되어 있음
+       - 스프링 데이터 JPA `JpaRepository` 인터페이스에 이미 포함
+   
      - 단점
+   
+       - 외부 조인 불가능(INNER JOIN만 가능)
+       - 중첩 제약 조건 불가능
+         - `firstname = ?0 or (firstname = ?1 and lastname =?2)`
+       - 매칭 조건이 매우 단순함
+         - 문자는 `starts/contains/ends/regx`
+         - 다른 속성은 `=`만 지원
    
    - Projections
    
