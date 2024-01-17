@@ -1249,11 +1249,47 @@
              }
          }
          
-         /* 명세를 정의하려면 Specification 인터페이스를 구현
-         명세를 정의할 때는 toPredicate(...) 메서드만 구현하면 되는데 JPA Criteria의 Root ,CriteriaQuery , CriteriaBuilder 클래스를 파라미터 제공함 */
+         /* 명세를 정의하려면 Specification 인터페이스와 toPredicate(...) 메서드만 구현하면 되는데 JPA Criteria의 Root ,CriteriaQuery , CriteriaBuilder 클래스를 파라미터 제공함 */
+         ```
+     
+   - [Query by sample](https://docs.spring.io/spring-data/jpa/reference/data-commons/query-by-example.html)
+   
+     - 유의점
+   
+       - **매칭 조건이 너무 단순하고, 내부 조인만 가능하기 때문에 실무에서는 Query by sample를 거의 안 씀! 대신에 QueryDSL을 사용하자.**
+   
+     - 코드
+   
+       - ```java
+         @Test
+         @DisplayName("Query Sample 테스트")
+         public void querySample() {
+             //given
+             Team team = new Team("Arsenal");
+             entityManager.persist(team);
+         
+             Member memberA = new Member("jaeuk", 0, team);
+             Member memberB = new Member("minyoung", 0, team);
+             entityManager.persist(memberA);
+             entityManager.persist(memberB);
+         
+             entityManager.flush();
+             entityManager.clear();
+         
+             //when
+             Member member = new Member("jaeuk"); //Probe 생성, Probe: 필드에 데이터가 있는 실제 도메인 객체
+             ExampleMatcher exampleMatcher = ExampleMatcher.matching().withIgnorePaths("age"); //age 칼럼을 무시
+             Example<Member> example = Example.of(member, exampleMatcher);
+             List<Member> result = memberRepository.findAll(example);
+         
+             //then
+             assertThat(result.get(0).getUsername()).isEqualTo("jaeuk");
+         }
          ```
    
-   - Query by sample
+     - 장점
+   
+     - 단점
    
    - Projections
    

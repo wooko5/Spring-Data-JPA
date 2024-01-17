@@ -4,9 +4,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
@@ -382,5 +380,33 @@ class MemberRepositoryTest {
 
         //then
         assertThat(result.size()).isEqualTo(1);
+    }
+
+    @Test
+    @DisplayName("Query Sample 테스트")
+    public void querySample() {
+        //given
+        Team team = new Team("Arsenal");
+        entityManager.persist(team);
+
+        Member memberA = new Member("jaeuk", 0, team);
+        Member memberB = new Member("minyoung", 0, team);
+        entityManager.persist(memberA);
+        entityManager.persist(memberB);
+
+        entityManager.flush();
+        entityManager.clear();
+
+        //when
+        Member member = new Member("jaeuk"); //Probe 생성, Probe: 필드에 데이터가 있는 실제 도메인 객체
+        Team arsenal = new Team("Arsenal");
+        member.setTeam(arsenal);
+
+        ExampleMatcher exampleMatcher = ExampleMatcher.matching().withIgnorePaths("age"); //age 칼럼을 무시
+        Example<Member> example = Example.of(member, exampleMatcher);
+        List<Member> result = memberRepository.findAll(example);
+
+        //then
+        assertThat(result.get(0).getUsername()).isEqualTo("jaeuk");
     }
 }
