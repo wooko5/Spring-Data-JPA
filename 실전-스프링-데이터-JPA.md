@@ -1356,6 +1356,7 @@
              System.out.println("teamName ======= " + nestedClosedProjection.getTeam().getName());
          }
          ```
+
    
        - ![image-20240117145105183](https://github.com/wooko5/Spring-Data-JPA/assets/58154633/732147e7-f80d-4e66-8a17-e152e7fcce20)
 
