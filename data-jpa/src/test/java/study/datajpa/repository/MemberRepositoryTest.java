@@ -11,6 +11,9 @@ import org.springframework.transaction.annotation.Transactional;
 import study.datajpa.dto.MemberDto;
 import study.datajpa.entity.Member;
 import study.datajpa.entity.Team;
+import study.datajpa.repository.datajpa.MemberRepository;
+import study.datajpa.repository.datajpa.TeamRepository;
+import study.datajpa.repository.spec.MemberSpecifications;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;

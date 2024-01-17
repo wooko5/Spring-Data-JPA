@@ -1,4 +1,4 @@
-package study.datajpa.repository;
+package study.datajpa.repository.datajpa;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

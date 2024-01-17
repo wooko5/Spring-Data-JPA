@@ -1,4 +1,4 @@
-package study.datajpa.repository;
+package study.datajpa.repository.jpa;
 
 import org.springframework.stereotype.Repository;
 import study.datajpa.entity.Team;

@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 import study.datajpa.entity.Item;
+import study.datajpa.repository.datajpa.ItemRepository;
 
 @Rollback(value = false)
 @SpringBootTest

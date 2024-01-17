@@ -1,4 +1,4 @@
-package study.datajpa.repository;
+package study.datajpa.repository.datajpa;
 
 import study.datajpa.entity.Member;
 

@@ -1305,4 +1305,8 @@
    
    - Projections
    
+     - 개념
+       - 전체 Entity가 아닌 Entity의 특정 property만 조회하고 싶다면 Projections를 이용함
+     -  
+   
    - Native Query

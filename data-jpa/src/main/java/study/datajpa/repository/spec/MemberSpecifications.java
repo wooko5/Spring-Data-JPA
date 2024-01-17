@@ -1,4 +1,4 @@
-package study.datajpa.repository;
+package study.datajpa.repository.spec;
 
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.util.StringUtils;
