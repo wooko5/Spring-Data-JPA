@@ -3,7 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/Spring-Data-JPA.iml" filepath="$PROJECT_DIR$/.idea/Spring-Data-JPA.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/data-jpa.main.iml" filepath="$PROJECT_DIR$/.idea/modules/data-jpa.main.iml" />
     </modules>
   </component>
 </project>

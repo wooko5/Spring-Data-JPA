@@ -13,6 +13,9 @@ import study.datajpa.entity.Member;
 import study.datajpa.entity.Team;
 import study.datajpa.repository.datajpa.MemberRepository;
 import study.datajpa.repository.datajpa.TeamRepository;
+import study.datajpa.repository.projection.NestedClosedProjection;
+import study.datajpa.repository.projection.UsernameOnly;
+import study.datajpa.repository.projection.UsernameOnlyDto;
 import study.datajpa.repository.spec.MemberSpecifications;
 
 import javax.persistence.EntityManager;
@@ -411,5 +414,47 @@ class MemberRepositoryTest {
 
         //then
         assertThat(result.get(0).getUsername()).isEqualTo("jaeuk");
+    }
+
+    @Test
+    @DisplayName("Projections 테스트")
+    public void projection() {
+        //given
+        Team team = new Team("Arsenal");
+        entityManager.persist(team);
+
+        Member memberA = new Member("jaeuk", 0, team);
+        Member memberB = new Member("minyoung", 0, team);
+        entityManager.persist(memberA);
+        entityManager.persist(memberB);
+
+        entityManager.flush();
+        entityManager.clear();
+
+        //when
+        List<UsernameOnly> resultA = memberRepository.findProjectionsByUsername("jaeuk");
+        for(UsernameOnly usernameOnly : resultA){
+            System.out.println("=====================UsernameOnly===========================================");
+            System.out.println("usernameOnly == " + usernameOnly);
+            System.out.println("================================================================");
+        }
+
+        List<UsernameOnlyDto> resultB = memberRepository.findClassProjectionsByUsername("jaeuk", UsernameOnlyDto.class);
+        for(UsernameOnlyDto usernameOnly : resultB){
+            System.out.println("=========================UsernameOnlyDto=======================================");
+            System.out.println("usernameOnly == " + usernameOnly);
+            System.out.println("usename ======= " + usernameOnly.getUsername());
+            System.out.println("================================================================");
+        }
+
+        List<NestedClosedProjection> resultC = memberRepository.findClassProjectionsByUsername("jaeuk", NestedClosedProjection.class);
+        for(NestedClosedProjection nestedClosedProjection : resultC){
+            System.out.println("===========================NestedClosedProjection=====================================");
+            System.out.println("username ======= " + nestedClosedProjection.getUsername());
+            System.out.println("teamName ======= " + nestedClosedProjection.getTeam().getName());
+            System.out.println("================================================================");
+        }
+
+        //then
     }
 }

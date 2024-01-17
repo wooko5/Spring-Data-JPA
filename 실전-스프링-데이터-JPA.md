@@ -1303,10 +1303,62 @@
          - 문자는 `starts/contains/ends/regx`
          - 다른 속성은 `=`만 지원
    
-   - Projections
+   - [Projections](https://docs.spring.io/spring-data/elasticsearch/reference/data-commons/repositories/projections.html)
    
      - 개념
-       - 전체 Entity가 아닌 Entity의 특정 property만 조회하고 싶다면 Projections를 이용함
-     -  
+       - 전체 Entity가 아닌 Entity의 특정 property만 조회하고 싶다면 projection을 이용함
+       - 프록시 객체로 처리
+       - ![image-20240117142730464](C:\Users\USER\AppData\Roaming\Typora\typora-user-images\image-20240117142730464.png)
+       
+     - Closed Projection
+   
+       - 프로젝션 인터페이스의 메소드가 엔티티의 프로퍼티만 하는 프로젝션을 의미
+       - Spring Data가 쿼리를 최적화함
+   
+     - Open Projection
+   
+       - `@Value` 어노테이션을 사용한 projection
+       - Entity의 모든 property를 조회한 후 원하는 property만 이용하는 projection
+   
+     - 클래스 기반 Projection
+   
+       - 실제 객체로 처리
+       - ![image-20240117142604223](C:\Users\USER\AppData\Roaming\Typora\typora-user-images\image-20240117142604223.png)
+   
+     - 동적 Projection
+   
+       - 코드
+   
+       - ```java
+         <T> List<T> findClassProjectionsByUsername(@Param("username") String username, Class<T> type);
+         ```
+   
+     - 중첩 구조 처리
+   
+       - 코드
+   
+       - ```java
+         public interface NestedClosedProjection {
+         
+             String getUsername(); //root이기 때문에 정확하게 잘 가져옴
+         
+             TeamInfo getTeam(); //root가 아니기 때문에 LEFT OUTER JOIN 처리
+         
+             interface TeamInfo{
+                 String getName();
+             }
+         }
+         
+         /* 아래는 테스트코드 */
+         List<NestedClosedProjection> resultC = memberRepository.findClassProjectionsByUsername("jaeuk", NestedClosedProjection.class);
+         for(NestedClosedProjection nestedClosedProjection : resultC){
+             System.out.println("username ======= " + nestedClosedProjection.getUsername());
+             System.out.println("teamName ======= " + nestedClosedProjection.getTeam().getName());
+         }
+         ```
+   
+         
+   
+       - ![image-20240117145105183](C:\Users\USER\AppData\Roaming\Typora\typora-user-images\image-20240117145105183.png)
    
    - Native Query
