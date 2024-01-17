@@ -1308,7 +1308,7 @@
      - 개념
        - 전체 Entity가 아닌 Entity의 특정 property만 조회하고 싶다면 projection을 이용함
        - 프록시 객체로 처리
-       - ![image-20240117142730464](C:\Users\USER\AppData\Roaming\Typora\typora-user-images\image-20240117142730464.png)
+       - ![image-20240117142730464](https://github.com/wooko5/Spring-Data-JPA/assets/58154633/3b93f125-9b47-470a-9b8d-db3bb01879e1)
        
      - Closed Projection
    
@@ -1323,7 +1323,7 @@
      - 클래스 기반 Projection
    
        - 실제 객체로 처리
-       - ![image-20240117142604223](C:\Users\USER\AppData\Roaming\Typora\typora-user-images\image-20240117142604223.png)
+       - ![image-20240117142604223](https://github.com/wooko5/Spring-Data-JPA/assets/58154633/d48ccb8f-bb7e-4729-9a70-c2aed5aa6de9)
    
      - 동적 Projection
    
@@ -1357,8 +1357,7 @@
          }
          ```
    
-         
-   
-       - ![image-20240117145105183](C:\Users\USER\AppData\Roaming\Typora\typora-user-images\image-20240117145105183.png)
+       - ![image-20240117145105183](https://github.com/wooko5/Spring-Data-JPA/assets/58154633/732147e7-f80d-4e66-8a17-e152e7fcce20)
+
    
    - Native Query
