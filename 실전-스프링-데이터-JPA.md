@@ -1358,6 +1358,44 @@
          ```
        
        - ![image-20240117145105183](https://github.com/wooko5/Spring-Data-JPA/assets/58154633/732147e7-f80d-4e66-8a17-e152e7fcce20)
+       
+     - 주의
+     
+       - 프로젝션 대상이 root 엔티티면, JPQL SELECT 절 최적화가 가능
+       - **프로젝션 대상이 ROOT가 아니면**
+         - **LEFT OUTER JOIN 처리**
+         - 모든 필드를 SELECT해서 엔티티로 조회한 다음에 계산
+     
+     - 정리
+     
+       - 프로젝션 대상이 root 엔티티면 유용
+       - 하지만 root 엔티티가 아닌 엔티티는 select절 최적화를 못 해서 원하는 property만 조회하는게 힘듦(전체 조회 후 원하는 property만 재조회)
+       - 실무의 복잡한 query를 해결하기에는 한계점이 존재
    
-
+   
    - Native Query
+   
+     - 개념
+   
+       - SQL을 그대로 문자열로 만들어서 사용하는 방법
+       - **가급적 사용하지 않는 것을 추천, 정말 어쩔 없을 때는 projection을 이용**
+   
+     - 페이징 지원
+   
+     - 반환타입
+   
+     - 제약
+   
+       - Sort 파라미터를 통한 정렬이 정상 동작하지 않을 수 있음
+       - JPQL처럼 컴파일 단계에서 문법확인 불가하고, 런타임 단계에서 오류 확인가능해서 위험함
+       - 동적 쿼리 불가능
+         - 하이버네이트를 직접 활용하거나
+         - 스프링 JDBC 템플릿, myBatis같은 외부 라이브러리 사용하기
+   
+     - 코드
+   
+       - ```java
+         @Query(value = "select * from member where username = ?", nativeQuery = true)
+         Member findByNativeQuery(String username);
+         ```
+

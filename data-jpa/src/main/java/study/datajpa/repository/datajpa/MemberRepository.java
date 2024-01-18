@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.*;
 import org.springframework.data.repository.query.Param;
 import study.datajpa.dto.MemberDto;
 import study.datajpa.entity.Member;
+import study.datajpa.repository.MemberProjection;
 import study.datajpa.repository.projection.UsernameOnly;
 import study.datajpa.repository.projection.UsernameOnlyDto;
 
@@ -70,9 +71,17 @@ public interface MemberRepository extends JpaRepository<Member, Long>, MemberRep
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     List<Member> findLockByUsername(String username);
 
-    List<UsernameOnly> findProjectionsByUsername(@Param("username") String username); //projections
+    List<UsernameOnly> findProjectionsByUsername(@Param("username") String username); //projection
 
-    List<UsernameOnlyDto> findClassProjectionsByUsername(@Param("username") String username); //클래스 기반 projections
+    List<UsernameOnlyDto> findClassProjectionsByUsername(@Param("username") String username); //클래스 기반 projection
 
-    <T> List<T> findClassProjectionsByUsername(@Param("username") String username, Class<T> type); //클래스 기반 projections
+    <T> List<T> findClassProjectionsByUsername(@Param("username") String username, Class<T> type); //제네릭을 이용한 동적 projection
+
+    @Query(value = "select * from member where username = ?", nativeQuery = true)
+    Member findByNativeQuery(String username);
+
+    @Query(value = "select m.member_id as id, m.username, t.name as teamName from member m left join team t"
+            ,countQuery = "select count(*) from member"
+            ,nativeQuery = true)
+    Page<MemberProjection> findByNativeProjection(Pageable pageable); //네이티브 쿼리를 굳이 써야한다면 DTO를 조회하는 projection 방식을 쓰자
 }

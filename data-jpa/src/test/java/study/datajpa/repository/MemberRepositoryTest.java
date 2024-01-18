@@ -457,4 +457,30 @@ class MemberRepositoryTest {
 
         //then
     }
+
+    @Test
+    @DisplayName("NativeQuery 테스트")
+    public void nativeQuery() {
+        //given
+        Team team = new Team("Arsenal");
+        entityManager.persist(team);
+
+        Member memberA = new Member("jaeuk", 0, team);
+        Member memberB = new Member("minyoung", 0, team);
+        entityManager.persist(memberA);
+        entityManager.persist(memberB);
+
+        entityManager.flush();
+        entityManager.clear();
+
+        //when
+//        Member member = memberRepository.findByNativeQuery("jaeuk");
+        Page<MemberProjection> result = memberRepository.findByNativeProjection(PageRequest.of(0, 10));
+        List<MemberProjection> content = result.getContent();
+        for(MemberProjection memberProjection : content){
+            System.out.println("getUsername ==  " + memberProjection.getUsername());
+            System.out.println("getTeamName ==  " + memberProjection.getTeamName());
+        }
+        //then
+    }
 }
