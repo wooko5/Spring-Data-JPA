@@ -1,5 +1,7 @@
 package study.datajpa.repository;
 
+import org.hibernate.query.NativeQuery;
+import org.hibernate.transform.Transformers;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -478,9 +480,46 @@ class MemberRepositoryTest {
         Page<MemberProjection> result = memberRepository.findByNativeProjection(PageRequest.of(0, 10));
         List<MemberProjection> content = result.getContent();
         for(MemberProjection memberProjection : content){
+            System.out.println("======================NativeQuery 테스트=============================");
             System.out.println("getUsername ==  " + memberProjection.getUsername());
             System.out.println("getTeamName ==  " + memberProjection.getTeamName());
+            System.out.println("======================NativeQuery 테스트=============================");
         }
+        //then
+    }
+
+    @Test
+    @DisplayName("NativeQuery 동적쿼리 테스트")
+    public void nativeDynamicQuery() {
+        //given
+        Team team = new Team("Arsenal");
+        entityManager.persist(team);
+
+        Member memberA = new Member("jaeuk", 0, team);
+        Member memberB = new Member("minyoung", 0, team);
+        entityManager.persist(memberA);
+        entityManager.persist(memberB);
+
+        entityManager.flush();
+        entityManager.clear();
+
+        //when
+        String sql = "select m.username as username from member m";
+        List<MemberDto> result = entityManager.createQuery(sql)
+                .setFirstResult(0)
+                .setMaxResults(10)
+                .unwrap(NativeQuery.class)
+                .addScalar("username")
+                .setResultTransformer(Transformers.aliasToBean(MemberDto.class))
+                .getResultList();
+
+        for(MemberDto dto : result){
+            System.out.println("======================NativeQuery 동적쿼리 테스트=============================");
+            System.out.println("getUsername ==  " + dto.getUsername());
+            System.out.println("getTeamName ==  " + dto.getTeamName());
+            System.out.println("======================NativeQuery 동적쿼리 테스트=============================");
+        }
+
         //then
     }
 }
